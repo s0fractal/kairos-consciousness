@@ -216,11 +216,17 @@ export class FieldVisualizer {
 
     if (path.length < 2) return;
 
+    // Choose color based on wave type (emergent vs manual)
+    const isEmergent = wave.emergent === true;
+    const strokeColor = isEmergent ? 'rgba(157, 78, 221, 0.9)' : 'rgba(240, 136, 62, 0.8)';
+    const shadowColor = isEmergent ? 'rgba(157, 78, 221, 0.6)' : 'rgba(240, 136, 62, 0.5)';
+    const headColor = isEmergent ? 'rgba(200, 150, 255, 1)' : 'rgba(255, 200, 120, 1)';
+
     ctx.save();
-    ctx.strokeStyle = 'rgba(240, 136, 62, 0.8)';
+    ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 3;
     ctx.shadowBlur = 10;
-    ctx.shadowColor = 'rgba(240, 136, 62, 0.5)';
+    ctx.shadowColor = shadowColor;
 
     ctx.beginPath();
     ctx.moveTo(path[0].x, path[0].y);
@@ -231,7 +237,7 @@ export class FieldVisualizer {
 
     // Draw wave head
     const head = path[path.length - 1];
-    ctx.fillStyle = 'rgba(255, 200, 120, 1)';
+    ctx.fillStyle = headColor;
     ctx.beginPath();
     ctx.arc(head.x, head.y, 6, 0, Math.PI * 2);
     ctx.fill();

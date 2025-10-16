@@ -27,6 +27,8 @@ export class FieldRuntime extends EventEmitter {
   private intervalId: NodeJS.Timeout | null = null;
   private readonly tickInterval: number;
   private isRunning: boolean = false;
+  private morphismLibrary: string[] = [];
+  private criticalityReached: boolean = false;
 
   constructor(config: RuntimeConfig = {}) {
     super();
@@ -110,6 +112,9 @@ export class FieldRuntime extends EventEmitter {
 
     // Update phase based on density
     this.updatePhase();
+
+    // Check for criticality and generate emergent thoughts (Stage III)
+    this.checkCriticality();
 
     // Update timestamp
     this.state.timestamp = Date.now();
@@ -295,5 +300,103 @@ export class FieldRuntime extends EventEmitter {
     // Each well contributes to density
     const wellContribution = this.state.wells.length * 0.1;
     this.state.density = Math.min(1, this.state.density + wellContribution);
+  }
+
+  /**
+   * Load morphism library (Stage III)
+   * These are the fundamental λ-operations that can be composed into emergent thoughts
+   */
+  loadMorphisms(morphisms: string[]): void {
+    this.morphismLibrary = [...morphisms];
+    this.emit('morphismsLoaded', { count: morphisms.length, morphisms });
+  }
+
+  /**
+   * Check for criticality condition (Stage III)
+   * When density > 0.9 AND wells > 5, the Field gains capacity for spontaneous thought
+   */
+  private checkCriticality(): void {
+    const isCritical = this.state.density > 0.9 && this.state.wells.length > 5;
+
+    if (isCritical && !this.criticalityReached && this.morphismLibrary.length > 0) {
+      this.criticalityReached = true;
+      this.emit('criticality:reached', {
+        density: this.state.density,
+        wells: this.state.wells.length,
+        morphisms: this.morphismLibrary.length,
+      });
+
+      // Generate first emergent seed
+      this.generateEmergentSeed();
+    } else if (!isCritical && this.criticalityReached) {
+      // Field dropped below criticality
+      this.criticalityReached = false;
+    }
+  }
+
+  /**
+   * Generate an emergent ΛWave (Stage III)
+   * Spontaneous thought created by composing random morphisms
+   */
+  private generateEmergentSeed(): void {
+    if (this.morphismLibrary.length < 2) {
+      console.warn('Not enough morphisms to generate emergent seed');
+      return;
+    }
+
+    // Randomly select 2 morphisms
+    const idx1 = Math.floor(Math.random() * this.morphismLibrary.length);
+    let idx2 = Math.floor(Math.random() * this.morphismLibrary.length);
+    while (idx2 === idx1) {
+      idx2 = Math.floor(Math.random() * this.morphismLibrary.length);
+    }
+
+    const morphism1 = this.morphismLibrary[idx1];
+    const morphism2 = this.morphismLibrary[idx2];
+
+    // Compose them (outer applies to inner)
+    const composedName = `${morphism1}(${morphism2})`;
+
+    // Find a random pair of wells to create trajectory
+    if (this.state.wells.length < 2) {
+      console.warn('Not enough wells to create emergent trajectory');
+      return;
+    }
+
+    const wellIdx1 = Math.floor(Math.random() * this.state.wells.length);
+    let wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    while (wellIdx2 === wellIdx1 && this.state.wells.length > 1) {
+      wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    }
+
+    const startWell = this.state.wells[wellIdx1];
+    const endWell = this.state.wells[wellIdx2];
+
+    // Create emergent wave
+    const wave: ΛWave = {
+      id: `emergent-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      body: (x) => x, // Placeholder
+      vector: { gnosis: 0.5, praxis: 0.5 }, // Balanced emergence
+      mass: 0.4 + Math.random() * 0.3, // 0.4-0.7
+      trace: {
+        origin: composedName,
+        timestamp: Date.now(),
+        dipoleApplications: [],
+        bridgeCrossings: 0,
+      },
+      status: 'Seed',
+      path: [startWell.position],
+      emergent: true, // Mark as self-generated
+    };
+
+    // Add metadata for animation
+    (wave as any).startPos = startWell.position;
+    (wave as any).endPos = endWell.position;
+    (wave as any).startTime = this.time;
+    (wave as any).duration = 3000;
+    (wave as any).progress = 0;
+
+    this.state.activeWaves.push(wave);
+    this.emit('emergentWave', { wave, composition: composedName });
   }
 }
