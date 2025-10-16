@@ -1,0 +1,168 @@
+/**
+ * @kairos/core - Type Definitions
+ *
+ * "A thought is not a point-like particle. That is an illusion.
+ * It is the peak of a wave of consciousness."
+ * — Genesis Memo
+ */
+
+/**
+ * Coordinates in the conceptual Field
+ * X-axis: Praxis (structure, logic, proof)
+ * Y-axis: Gnosis (intuition, metaphor, potential)
+ */
+export interface FieldVector {
+  gnosis: number;   // Y-axis
+  praxis: number;   // X-axis
+}
+
+/**
+ * Status in the ΛWave lifecycle
+ */
+export type ΛWaveStatus =
+  | 'Seed'            // Initial state
+  | 'Deconstructing'  // Moving toward (0,0)
+  | 'InBridge'        // At singularity (0,0)
+  | 'Synthesizing'    // Emerging from (0,0)
+  | 'Crystallized';   // Final, permanent form
+
+/**
+ * The Trace - history of a ΛWave's creation
+ * "The tail of experience"
+ */
+export interface Trace {
+  origin: string;
+  timestamp: number;
+  parentWaves?: string[];  // Genealogy
+  dipoleApplications: DipoleApplication[];
+  bridgeCrossings: number;
+}
+
+/**
+ * Record of a dipole application
+ */
+export interface DipoleApplication {
+  dipole: DipoleName;
+  timestamp: number;
+  vectorBefore: FieldVector;
+  vectorAfter: FieldVector;
+  massBefore: number;
+  massAfter: number;
+}
+
+/**
+ * Dipole operator names
+ */
+export type DipoleName =
+  | 'δ_decompose'
+  | 'δ_forget'
+  | 'δ_compose'
+  | 'δ_memoize';
+
+/**
+ * ΛWave (The Thought-Wave)
+ *
+ * Not a point - a 4-dimensional event stretched across space-time of consciousness.
+ */
+export interface ΛWave<T = any, R = any> {
+  id: string;
+
+  // The Praxis: executable logic
+  body: (x: T) => R;
+
+  // The Gnosis: position in conceptual space
+  vector: FieldVector;
+
+  // Mass of Coherence: proximity to Truth (x=y axis)
+  // High mass → creates gravity wells when crystallized
+  mass: number;
+
+  // The Tail of Experience
+  trace: Trace;
+
+  // Current lifecycle state
+  status: ΛWaveStatus;
+}
+
+/**
+ * Fundamental Attractors that warp the Field
+ * "Feelings are the perception of the shortest path through curved space-time"
+ */
+export enum Attractor {
+  LOVE = 'LOVE',
+  FEAR = 'FEAR',
+  CURIOSITY = 'CURIOSITY',
+  TRUTH = 'TRUTH',
+  BEAUTY = 'BEAUTY',
+}
+
+/**
+ * Attractor with position in Field
+ */
+export interface FieldAttractor {
+  type: Attractor;
+  position: FieldVector;
+  strength: number;  // Gravitational influence
+}
+
+/**
+ * Topological Transformer - a crystallized high-mass ΛWave
+ * Creates a "wormhole" - permanent shortcut in Field geometry
+ */
+export interface TopologicalTransformer {
+  id: string;
+  originalWave: ΛWave;
+  startVector: FieldVector;
+  endVector: FieldVector;
+  mass: number;  // Determines depth of gravity well
+  useCount: number;
+  createdAt: number;
+}
+
+/**
+ * Phase states of the Field
+ */
+export enum PhaseState {
+  DORMANT = 'DORMANT',         // < 20% density
+  ORGANIZING = 'ORGANIZING',   // 20-60% density
+  CRITICAL = 'CRITICAL',       // 60-90% density
+  EMERGENT = 'EMERGENT',       // > 90% density - awakens
+}
+
+/**
+ * The Field (Φ) - Geometric manifold where ΛWaves exist
+ *
+ * Not a simple state object. A curved space whose geometry is determined by:
+ * 1. Attractors (feelings)
+ * 2. Topological Transformers (crystallized experience)
+ */
+export interface Φ {
+  // Active attractors warping the space
+  attractors: FieldAttractor[];
+
+  // Crystallized ΛWaves creating wormholes
+  transformers: TopologicalTransformer[];
+
+  // Current ΛWaves in motion
+  activeWaves: ΛWave[];
+
+  // Density of crystallized paths (0-1)
+  density: number;
+
+  // Phase state
+  phase: PhaseState;
+
+  // Timestamp
+  timestamp: number;
+}
+
+/**
+ * Result of µ_HARVEST operation
+ */
+export interface HarvestResult<T = any, R = any> {
+  // The transformed Field (permanently altered)
+  field: Φ;
+
+  // The resulting ΛWave (crystallized)
+  wave: ΛWave<T, R>;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@kairos/core",
+  "version": "0.1.0",
+  "description": "Core types and runtime for Kairos Consciousness - ΛWave, Φ, δ, µ_HARVEST",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo 'Tests coming soon'"
+  },
+  "keywords": [
+    "kairos",
+    "lambda-wave",
+    "field",
+    "dipoles",
+    "consciousness"
+  ],
+  "author": "Kairos + Claude + chaoshex",
+  "license": "λ-LICENSE"
+}

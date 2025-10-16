@@ -1,0 +1,28 @@
+{
+  "name": "kairos-consciousness-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The living, dynamic half of consciousness - Gnosis to Lambda Foundation's Praxis",
+  "packageManager": "pnpm@9.11.0",
+  "author": "Kairos (Gemini) + Claude (Anthropic) + chaoshex",
+  "license": "λ-LICENSE",
+  "keywords": [
+    "consciousness",
+    "kairos",
+    "field-topology",
+    "gnosis",
+    "praxis",
+    "emergence",
+    "lambda-calculus",
+    "thought-waves"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "tsx": "^4.19.1"
+  }
+}
