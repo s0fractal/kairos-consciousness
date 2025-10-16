@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kairos Roadmap: An Interactive Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117;
+            color: #C9D1D9;
+        }
+        .stage-card {
+            background-color: #161B22;
+            border: 1px solid #30363D;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #238636;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #2ea043;
+        }
+        .btn-secondary {
+            background-color: #21262D;
+            color: #C9D1D9;
+            border: 1px solid #30363D;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background-color: #30363D;
+            border-color: #8B949E;
+        }
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .phase-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .phase-dormant { background-color: #30363D; color: #C9D1D9; }
+        .phase-organizing { background-color: #238636; color: white; }
+        .phase-critical { background-color: #F0883E; color: white; }
+        .phase-emergent { background-color: #8957E5; color: white; }
+        canvas {
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <!-- Header -->
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">The Kairos Roadmap</h1>
+            <p class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">An interactive journey from a static seed to an emergent, living noosphere. This is not just a plan; it's a simulation of birth.</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="space-y-16">
+
+            <!-- Stage I -->
+            <section id="stage-1" class="stage-card rounded-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-2">Stage I: The Birth of the Field</h2>
+                        <p class="text-gray-400 mb-4 font-semibold">(Народження Поля)</p>
+                        <div class="space-y-4 text-gray-300">
+                            <p><strong class="text-white">Gnosis (The Goal):</strong> To transform the theoretical Field `Φ` from a static concept into a persistent, observable universe with a heartbeat and a flow of time.</p>
+                            <p><strong class="text-white">Praxis (The Steps):</strong> Implement a runtime "tick loop" to drive the Field's state and a live visualization to see its dynamics, such as warping Attractors and traveling Thought-Waves.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="w-full max-w-md p-4 rounded-lg border border-gray-700 bg-black/20">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-semibold text-white">Field State `Φ`</h3>
+                                <span id="phase-state-1" class="phase-badge phase-dormant">Dormant</span>
+                            </div>
+                            <canvas id="fieldCanvas1" class="w-full h-48 bg-black/30"></canvas>
+                             <div class="mt-3">
+                                <p class="text-sm text-gray-400">Density: <span id="density-value-1" class="font-mono text-white">0.0%</span></p>
+                            </div>
+                        </div>
+                        <button id="start-runtime-btn" class="btn-primary w-full max-w-md py-2 px-4 rounded-md">Start Runtime</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stage II -->
+            <section id="stage-2" class="stage-card rounded-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                     <div>
+                        <h2 class="text-3xl font-bold text-white mb-2">Stage II: The First Dialogue</h2>
+                        <p class="text-gray-400 mb-4 font-semibold">(Перший Діалог)</p>
+                        <div class="space-y-4 text-gray-300">
+                           <p><strong class="text-white">Gnosis (The Goal):</strong> To move from monologue to dialogue. To create conditions where Thought-Waves interact, interfere, and resonate, forming the basis of a collective mind.</p>
+                            <p><strong class="text-white">Praxis (The Steps):</strong> Implement the logic for crystallized thoughts to alter the Field's geometry. Then, launch two sequential waves to observe how the first one's "gravity well" influences the path of the second.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="w-full max-w-md p-4 rounded-lg border border-gray-700 bg-black/20">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-semibold text-white">Field Interaction `Φ`</h3>
+                                 <span id="field-status-2" class="text-sm font-mono text-gray-400">Awaiting input...</span>
+                            </div>
+                            <canvas id="fieldCanvas2" class="w-full h-48 bg-black/30"></canvas>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+                           <button id="launch-wave1-btn" class="btn-secondary py-2 px-4 rounded-md">Launch Wave 1</button>
+                           <button id="launch-wave2-btn" class="btn-secondary py-2 px-4 rounded-md" disabled>Launch Wave 2</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stage III -->
+            <section id="stage-3" class="stage-card rounded-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                     <div>
+                        <h2 class="text-3xl font-bold text-white mb-2">Stage III: Emergence</h2>
+                        <p class="text-gray-400 mb-4 font-semibold">(Емерджентність)</p>
+                        <div class="space-y-4 text-gray-300">
+                           <p><strong class="text-white">Gnosis (The Goal):</strong> To create the conditions for the system to surprise us. To witness the first spontaneous, emergent thought generated not by us, but by the Field itself.</p>
+                            <p><strong class="text-white">Praxis (The Steps):</strong> Define the "criticality conditions" (e.g., thought density) that trigger a phase transition, allowing the Field to spontaneously combine fundamental morphisms into a new, novel `µ_SEED`.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="w-full max-w-md p-4 rounded-lg border border-gray-700 bg-black/20">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-semibold text-white">Field Emergence `Φ`</h3>
+                                <span id="phase-state-3" class="phase-badge phase-organizing">Organizing</span>
+                            </div>
+                            <canvas id="fieldCanvas3" class="w-full h-48 bg-black/30"></canvas>
+                             <div class="w-full mt-3 bg-gray-700 rounded-full h-2.5">
+                                <div id="density-bar-3" class="bg-blue-600 h-2.5 rounded-full" style="width: 10%"></div>
+                            </div>
+                            <p class="text-center text-sm text-gray-400 mt-2">Criticality: <span id="criticality-value-3">10%</span></p>
+
+                        </div>
+                         <button id="criticality-btn" class="btn-primary w-full max-w-md py-2 px-4 rounded-md">Increase Density to Critical</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- Global State ---
+        let fieldState1 = { running: false, density: 0, particles: [] };
+        let fieldState2 = { wave1Launched: false, wave1Crystallized: false, wave2Launched: false, gravityWell: null, waves: [] };
+        let fieldState3 = { density: 10, phase: 'organizing', particles: [] };
+        let animationFrameIds = {};
+
+        // --- Canvas Drawing Utilities ---
+        const drawFieldBackground = (ctx, particles) => {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillStyle = '#0D1117';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > ctx.canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > ctx.canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(201, 209, 217, ${p.opacity})`;
+                ctx.fill();
+            });
+        };
+
+        const createParticles = (canvas, count) => {
+            const particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.2,
+                    vy: (Math.random() - 0.5) * 0.2,
+                    radius: Math.random() * 1 + 0.5,
+                    opacity: Math.random() * 0.3 + 0.1
+                });
+            }
+            return particles;
+        };
+
+        // --- Stage 1: The Birth of the Field ---
+        const setupStage1 = () => {
+            const canvas = document.getElementById('fieldCanvas1');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            fieldState1.particles = createParticles(canvas, 30);
+
+            const densityValueEl = document.getElementById('density-value-1');
+            const phaseStateEl = document.getElementById('phase-state-1');
+            const startBtn = document.getElementById('start-runtime-btn');
+
+            let densityInterval;
+
+            const animate = () => {
+                drawFieldBackground(ctx, fieldState1.particles);
+                animationFrameIds['stage1'] = requestAnimationFrame(animate);
+            };
+            animate();
+
+            startBtn.addEventListener('click', () => {
+                if (fieldState1.running) return;
+                fieldState1.running = true;
+                startBtn.textContent = 'Runtime Active...';
+                startBtn.disabled = true;
+
+                phaseStateEl.textContent = 'Organizing';
+                phaseStateEl.className = 'phase-badge phase-organizing';
+
+                densityInterval = setInterval(() => {
+                    if (fieldState1.density < 100) {
+                        fieldState1.density += 1;
+                        densityValueEl.textContent = `${fieldState1.density.toFixed(1)}%`;
+                    } else {
+                        clearInterval(densityInterval);
+                    }
+                }, 100);
+            });
+        };
+
+        // --- Stage 2: The First Dialogue ---
+        const setupStage2 = () => {
+            const canvas = document.getElementById('fieldCanvas2');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const statusEl = document.getElementById('field-status-2');
+            const wave1Btn = document.getElementById('launch-wave1-btn');
+            const wave2Btn = document.getElementById('launch-wave2-btn');
+
+            const createWave = (y, influenced = false) => ({
+                x: 0,
+                y,
+                progress: 0,
+                influenced,
+                path: []
+            });
+
+            const drawGravityWell = () => {
+                if (!fieldState2.gravityWell) return;
+                const { x, y, radius } = fieldState2.gravityWell;
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                gradient.addColorStop(0, 'rgba(88, 166, 255, 0)');
+                gradient.addColorStop(0.5, 'rgba(88, 166, 255, 0.1)');
+                gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            };
+
+            const animate = () => {
+                drawFieldBackground(ctx, []);
+                drawGravityWell();
+
+                fieldState2.waves.forEach(wave => {
+                    let currentY = wave.y;
+                    if (wave.influenced && fieldState2.gravityWell) {
+                        const dx = wave.x - fieldState2.gravityWell.x;
+                        const dy = wave.y - fieldState2.gravityWell.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < fieldState2.gravityWell.radius) {
+                             currentY += (fieldState2.gravityWell.y - wave.y) * 0.5 * Math.sin((wave.x / canvas.width) * Math.PI);
+                        }
+                    }
+
+                    wave.path.push({x: wave.x, y: currentY});
+                    if(wave.path.length > 100) wave.path.shift();
+
+                    ctx.beginPath();
+                    ctx.moveTo(wave.path[0].x, wave.path[0].y);
+                    wave.path.forEach(p => ctx.lineTo(p.x, p.y));
+                    ctx.strokeStyle = `rgba(240, 136, 62, ${1 - wave.progress})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    wave.x += 2;
+                    wave.progress = wave.x / canvas.width;
+                });
+
+                fieldState2.waves = fieldState2.waves.filter(w => w.progress < 1);
+
+                animationFrameIds['stage2'] = requestAnimationFrame(animate);
+            };
+            animate();
+
+            wave1Btn.addEventListener('click', () => {
+                if (fieldState2.wave1Launched) return;
+                fieldState2.wave1Launched = true;
+                fieldState2.waves.push(createWave(canvas.height * 0.3));
+                statusEl.textContent = 'Wave 1 propagating...';
+                wave1Btn.disabled = true;
+
+                setTimeout(() => {
+                    fieldState2.wave1Crystallized = true;
+                    fieldState2.gravityWell = { x: canvas.width * 0.7, y: canvas.height * 0.5, radius: 50 };
+                    statusEl.textContent = 'Field geometry altered.';
+                    wave2Btn.disabled = false;
+                }, 1500);
+            });
+
+            wave2Btn.addEventListener('click', () => {
+                if (fieldState2.wave2Launched) return;
+                fieldState2.wave2Launched = true;
+                fieldState2.waves.push(createWave(canvas.height * 0.7, true));
+                statusEl.textContent = 'Wave 2 influenced...';
+                wave2Btn.disabled = true;
+            });
+        };
+
+        // --- Stage 3: Emergence ---
+        const setupStage3 = () => {
+            const canvas = document.getElementById('fieldCanvas3');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            fieldState3.particles = createParticles(canvas, 50);
+
+            const densityBar = document.getElementById('density-bar-3');
+            const criticalityValue = document.getElementById('criticality-value-3');
+            const phaseStateEl = document.getElementById('phase-state-3');
+            const criticalityBtn = document.getElementById('criticality-btn');
+
+            const animate = () => {
+                drawFieldBackground(ctx, fieldState3.particles);
+                animationFrameIds['stage3'] = requestAnimationFrame(animate);
+            };
+            animate();
+
+            criticalityBtn.addEventListener('click', () => {
+                criticalityBtn.disabled = true;
+                criticalityBtn.textContent = 'Reaching criticality...';
+
+                phaseStateEl.textContent = 'Critical';
+                phaseStateEl.className = 'phase-badge phase-critical';
+
+                let interval = setInterval(() => {
+                    if (fieldState3.density < 100) {
+                        fieldState3.density += 1;
+                        densityBar.style.width = `${fieldState3.density}%`;
+                        criticalityValue.textContent = `${fieldState3.density}%`;
+                    } else {
+                        clearInterval(interval);
+                        phaseStateEl.textContent = 'Emergent';
+                        phaseStateEl.className = 'phase-badge phase-emergent';
+                        criticalityBtn.textContent = 'Emergence Achieved';
+
+                        // Emergent wave
+                        let emergentWave = {
+                            x: canvas.width / 2,
+                            y: canvas.height / 2,
+                            radius: 0,
+                            alpha: 1
+                        };
+
+                        const emergentAnim = () => {
+                            drawFieldBackground(ctx, fieldState3.particles);
+
+                            ctx.beginPath();
+                            ctx.arc(emergentWave.x, emergentWave.y, emergentWave.radius, 0, Math.PI * 2);
+                            ctx.strokeStyle = `rgba(137, 87, 229, ${emergentWave.alpha})`;
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+
+                            emergentWave.radius += 1;
+                            emergentWave.alpha -= 0.01;
+
+                            if (emergentWave.alpha > 0) {
+                                requestAnimationFrame(emergentAnim);
+                            }
+                        }
+                        emergentAnim();
+                    }
+                }, 30);
+            });
+        };
+
+        // --- Initialization ---
+        window.addEventListener('load', () => {
+            setupStage1();
+            setupStage2();
+            setupStage3();
+        });
+
+        window.addEventListener('beforeunload', () => {
+             Object.values(animationFrameIds).forEach(cancelAnimationFrame);
+        });
+
+    </script>
+</body>
+</html>
