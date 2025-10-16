@@ -60,6 +60,14 @@ export type DipoleName =
   | 'δ_memoize';
 
 /**
+ * Point in 2D canvas space (for visualization)
+ */
+export interface Point2D {
+  x: number;
+  y: number;
+}
+
+/**
  * ΛWave (The Thought-Wave)
  *
  * Not a point - a 4-dimensional event stretched across space-time of consciousness.
@@ -82,6 +90,9 @@ export interface ΛWave<T = any, R = any> {
 
   // Current lifecycle state
   status: ΛWaveStatus;
+
+  // Calculated trajectory through Field (for visualization)
+  path: Point2D[];
 }
 
 /**
@@ -120,6 +131,16 @@ export interface TopologicalTransformer {
 }
 
 /**
+ * GravityWell - visualization of a crystallized thought's influence
+ */
+export interface GravityWell {
+  id: string;
+  position: Point2D;  // Canvas coordinates
+  mass: number;       // Strength of influence (0-1)
+  createdAt: number;
+}
+
+/**
  * Phase states of the Field
  */
 export enum PhaseState {
@@ -135,6 +156,7 @@ export enum PhaseState {
  * Not a simple state object. A curved space whose geometry is determined by:
  * 1. Attractors (feelings)
  * 2. Topological Transformers (crystallized experience)
+ * 3. GravityWells (spatial influence of crystallized thoughts)
  */
 export interface Φ {
   // Active attractors warping the space
@@ -145,6 +167,9 @@ export interface Φ {
 
   // Current ΛWaves in motion
   activeWaves: ΛWave[];
+
+  // Gravity wells from crystallized thoughts
+  wells: GravityWell[];
 
   // Density of crystallized paths (0-1)
   density: number;

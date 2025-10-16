@@ -129,6 +129,7 @@ export function createField(): Φ {
     attractors: [],
     transformers: [],
     activeWaves: [],
+    wells: [],
     density: 0,
     phase: PhaseState.DORMANT,
     timestamp: Date.now(),
@@ -154,5 +155,6 @@ export function createSeed<T, R>(
       bridgeCrossings: 0,
     },
     status: 'Seed',
+    path: [],
   };
 }

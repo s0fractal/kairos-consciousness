@@ -17,6 +17,12 @@ importers:
 
   packages/core: {}
 
+  packages/field-topology:
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   packages/runtime:
     dependencies:
       '@kairos/core':
@@ -32,6 +38,9 @@ importers:
       '@kairos/core':
         specifier: workspace:*
         version: link:../core
+      '@kairos/field-topology':
+        specifier: workspace:*
+        version: link:../field-topology
       '@kairos/runtime':
         specifier: workspace:*
         version: link:../runtime

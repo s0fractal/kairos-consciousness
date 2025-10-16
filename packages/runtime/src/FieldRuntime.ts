@@ -5,7 +5,7 @@
  * — Kairos, Stage I Directives
  */
 
-import { Φ, PhaseState, FieldAttractor, TopologicalTransformer } from '@kairos/core';
+import { Φ, PhaseState, FieldAttractor, TopologicalTransformer, ΛWave, GravityWell, Point2D } from '@kairos/core';
 import { EventEmitter } from 'events';
 
 /**
@@ -38,6 +38,7 @@ export class FieldRuntime extends EventEmitter {
       attractors: [],
       transformers: [],
       activeWaves: [],
+      wells: [],
       density: 0,
       phase: config.initialPhase ?? PhaseState.DORMANT,
       timestamp: Date.now(),
@@ -91,6 +92,9 @@ export class FieldRuntime extends EventEmitter {
   private tick(): void {
     // Increment time
     this.time += this.tickInterval;
+
+    // Update active waves
+    this.updateActiveWaves();
 
     // Calculate density using oscillating function (heartbeat)
     // Oscillates between 0 and 100, with period of ~5 seconds
@@ -184,10 +188,112 @@ export class FieldRuntime extends EventEmitter {
       attractors: [],
       transformers: [],
       activeWaves: [],
+      wells: [],
       density: 0,
       phase: PhaseState.DORMANT,
       timestamp: Date.now(),
     };
     this.emit('reset', this.state);
+  }
+
+  /**
+   * Launch a new ΛWave into the Field
+   *
+   * @param start - Starting canvas position
+   * @param end - Ending canvas position
+   * @param mass - Mass of the wave (0-1)
+   */
+  launchWave(start: Point2D, end: Point2D, mass: number = 0.5): string {
+    const wave: ΛWave = {
+      id: `wave-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      body: (x) => x, // Placeholder function
+      vector: { gnosis: 0, praxis: 0 }, // Placeholder
+      mass,
+      trace: {
+        origin: 'runtime-launch',
+        timestamp: Date.now(),
+        dipoleApplications: [],
+        bridgeCrossings: 0,
+      },
+      status: 'Seed',
+      path: [start], // Initialize with start position
+    };
+
+    // Store wave metadata for animation
+    (wave as any).startPos = start;
+    (wave as any).endPos = end;
+    (wave as any).startTime = this.time;
+    (wave as any).duration = 3000; // 3 seconds travel time
+    (wave as any).progress = 0;
+
+    this.state.activeWaves.push(wave);
+    this.emit('waveLaunched', wave);
+
+    return wave.id;
+  }
+
+  /**
+   * Update active waves during tick
+   */
+  private updateActiveWaves(): void {
+    const completedWaves: ΛWave[] = [];
+
+    for (const wave of this.state.activeWaves) {
+      const elapsed = this.time - (wave as any).startTime;
+      const progress = Math.min(1, elapsed / (wave as any).duration);
+      (wave as any).progress = progress;
+
+      // Update wave path (will be recalculated by topology)
+      // For now, just linear interpolation - topology will distort it
+      const start = (wave as any).startPos;
+      const end = (wave as any).endPos;
+
+      wave.path = [{
+        x: start.x + (end.x - start.x) * progress,
+        y: start.y + (end.y - start.y) * progress,
+      }];
+
+      // Check if wave completed
+      if (progress >= 1) {
+        completedWaves.push(wave);
+      }
+    }
+
+    // Crystallize completed waves
+    for (const wave of completedWaves) {
+      this.crystallizeWave(wave);
+    }
+  }
+
+  /**
+   * Crystallize a wave into a GravityWell
+   */
+  private crystallizeWave(wave: ΛWave): void {
+    // Remove from active waves
+    this.state.activeWaves = this.state.activeWaves.filter(w => w.id !== wave.id);
+
+    // Create gravity well at final position
+    const finalPos = wave.path[wave.path.length - 1];
+    const well: GravityWell = {
+      id: `well-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      position: finalPos,
+      mass: wave.mass,
+      createdAt: Date.now(),
+    };
+
+    this.state.wells.push(well);
+    this.emit('waveCrystallized', { wave, well });
+
+    // Update density
+    this.updateDensityFromWells();
+  }
+
+  /**
+   * Update density based on number of wells
+   */
+  private updateDensityFromWells(): void {
+    // Each well contributes to density
+    const wellContribution = this.state.wells.length * 0.1;
+    this.state.density = Math.min(1, this.state.density + wellContribution);
   }
 }

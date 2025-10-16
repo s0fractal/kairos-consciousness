@@ -5,8 +5,9 @@
  * — Kairos, Stage I Directives
  */
 
-import { Φ, PhaseState } from '@kairos/core';
+import { Φ, PhaseState, ΛWave, GravityWell } from '@kairos/core';
 import { FieldRuntime } from '@kairos/runtime';
+import { calculateGeodesic, Point } from '@kairos/field-topology';
 
 /**
  * UI element identifiers
@@ -93,10 +94,18 @@ export class FieldVisualizer {
   connect(runtime: FieldRuntime): void {
     runtime.on('update', (state: Φ) => {
       this.updateUI(state);
+      // Update animation state
+      if ((this as any).updateLastState) {
+        (this as any).updateLastState(state);
+      }
     });
 
     runtime.on('phaseChange', (phase: PhaseState) => {
       this.updatePhaseUI(phase);
+    });
+
+    runtime.on('waveCrystallized', ({ wave, well }: { wave: ΛWave; well: GravityWell }) => {
+      console.log('Wave crystallized:', wave.id, 'created well:', well.id);
     });
 
     runtime.on('start', () => {
@@ -108,10 +117,22 @@ export class FieldVisualizer {
    * Start animation loop for canvas rendering
    */
   private startAnimation(): void {
+    let lastState: Φ | null = null;
+
     const animate = () => {
-      this.drawFieldBackground();
+      if (lastState) {
+        this.renderField(lastState);
+      } else {
+        this.drawFieldBackground();
+      }
       this.animationFrameId = requestAnimationFrame(animate);
     };
+
+    // Store reference to update lastState
+    (this as any).updateLastState = (state: Φ) => {
+      lastState = state;
+    };
+
     animate();
   }
 
@@ -155,6 +176,103 @@ export class FieldVisualizer {
       ctx.fillStyle = `rgba(201, 209, 217, ${p.opacity})`;
       ctx.fill();
     });
+  }
+
+  /**
+   * Draw a gravity well
+   */
+  private drawGravityWell(well: GravityWell): void {
+    const { ctx } = this;
+    const { position, mass } = well;
+    const radius = 50 * mass;
+
+    // Gradient glow
+    const gradient = ctx.createRadialGradient(
+      position.x, position.y, 0,
+      position.x, position.y, radius
+    );
+    gradient.addColorStop(0, 'rgba(88, 166, 255, 0.4)');
+    gradient.addColorStop(0.5, 'rgba(88, 166, 255, 0.2)');
+    gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Core
+    ctx.fillStyle = 'rgba(88, 166, 255, 0.8)';
+    ctx.beginPath();
+    ctx.arc(position.x, position.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  /**
+   * Draw an active wave's path
+   */
+  private drawWavePath(wave: ΛWave): void {
+    const { ctx } = this;
+    const path = wave.path;
+
+    if (path.length < 2) return;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240, 136, 62, 0.8)';
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'rgba(240, 136, 62, 0.5)';
+
+    ctx.beginPath();
+    ctx.moveTo(path[0].x, path[0].y);
+    for (let i = 1; i < path.length; i++) {
+      ctx.lineTo(path[i].x, path[i].y);
+    }
+    ctx.stroke();
+
+    // Draw wave head
+    const head = path[path.length - 1];
+    ctx.fillStyle = 'rgba(255, 200, 120, 1)';
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /**
+   * Render complete Field state
+   */
+  private renderField(state: Φ): void {
+    this.drawFieldBackground();
+
+    // Draw gravity wells
+    for (const well of state.wells) {
+      this.drawGravityWell(well);
+    }
+
+    // Draw active waves with topology-distorted paths
+    for (const wave of state.activeWaves) {
+      // Recalculate path with current wells
+      const start = (wave as any).startPos;
+      const end = (wave as any).endPos;
+      const progress = (wave as any).progress || 0;
+
+      if (start && end && state.wells.length > 0) {
+        // Calculate geodesic through gravity wells
+        const topologyWells = state.wells.map(w => ({
+          position: w.position,
+          mass: w.mass
+        }));
+
+        const fullPath = calculateGeodesic(start, end, topologyWells, 50);
+
+        // Show only travelled portion
+        const travelledLength = Math.floor(fullPath.length * progress);
+        wave.path = fullPath.slice(0, Math.max(1, travelledLength));
+      }
+
+      this.drawWavePath(wave);
+    }
   }
 
   /**
