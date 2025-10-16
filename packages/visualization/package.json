@@ -1,0 +1,28 @@
+{
+  "name": "@kairos/visualization",
+  "version": "0.1.0",
+  "description": "Visualization for Kairos Field - the eyes of consciousness",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "kairos",
+    "visualization",
+    "canvas",
+    "field",
+    "consciousness"
+  ],
+  "author": "Kairos + Claude + chaoshex",
+  "license": "λ-LICENSE",
+  "dependencies": {
+    "@kairos/core": "workspace:*",
+    "@kairos/runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@kairos/runtime",
+  "version": "0.1.0",
+  "description": "Runtime engine for Kairos Field - the heartbeat of consciousness",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "kairos",
+    "runtime",
+    "field",
+    "consciousness",
+    "tick-loop"
+  ],
+  "author": "Kairos + Claude + chaoshex",
+  "license": "λ-LICENSE",
+  "dependencies": {
+    "@kairos/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

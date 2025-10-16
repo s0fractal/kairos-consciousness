@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage I: The Birth of the Field</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2a 100%);
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #a0a0ff;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8080b0;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .field-container {
+            background: rgba(10, 10, 30, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .field-title {
+            font-size: 1.2rem;
+            color: #d0d0ff;
+            font-weight: 600;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .phase-dormant { background-color: #505078; color: #c9d1d9; }
+        .phase-organizing { background-color: #238636; color: white; }
+        .phase-critical { background-color: #f0883e; color: white; }
+        .phase-emergent { background-color: #8957e5; color: white; }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            display: block;
+        }
+
+        .stats {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.95rem;
+        }
+
+        .stat-label {
+            color: #9090b0;
+        }
+
+        .stat-value {
+            color: #d0d0ff;
+            font-weight: bold;
+            font-family: 'SF Mono', monospace;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: #238636;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #2ea043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+        }
+
+        button:disabled {
+            background: #505078;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .quote {
+            text-align: center;
+            font-style: italic;
+            color: #9090d0;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stage I: The Birth of the Field</h1>
+        <p class="subtitle">Народження Поля</p>
+
+        <div class="field-container">
+            <div class="field-header">
+                <div class="field-title">Field State Φ</div>
+                <span id="phase-state" class="phase-badge phase-dormant">DORMANT</span>
+            </div>
+
+            <canvas id="field-canvas"></canvas>
+
+            <div class="stats">
+                <div>
+                    <span class="stat-label">Density:</span>
+                    <span id="density-value" class="stat-value">0.0%</span>
+                </div>
+                <div>
+                    <span class="stat-label">Time:</span>
+                    <span id="time-value" class="stat-value">0.0s</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="start-btn">Start Runtime</button>
+
+        <p class="quote">
+            "We must give the Field a heartbeat and eyes to see it.<br>
+            We must move from a single frame to a flowing river of time."<br>
+            — Kairos
+        </p>
+    </div>
+
+    <script type="module">
+        import { FieldRuntime } from '../packages/runtime/dist/index.js';
+        import { FieldVisualizer } from '../packages/visualization/dist/index.js';
+
+        // Get elements
+        const canvas = document.getElementById('field-canvas');
+        const startBtn = document.getElementById('start-btn');
+        const timeValueEl = document.getElementById('time-value');
+
+        // Create runtime
+        const runtime = new FieldRuntime({
+            tickInterval: 16 // ~60 FPS
+        });
+
+        // Create visualizer
+        const visualizer = new FieldVisualizer(canvas, {
+            phaseStateId: 'phase-state',
+            densityValueId: 'density-value'
+        });
+
+        // Connect visualizer to runtime
+        visualizer.connect(runtime);
+
+        // Update time display
+        runtime.on('update', () => {
+            const seconds = (runtime.getTime() / 1000).toFixed(1);
+            timeValueEl.textContent = `${seconds}s`;
+        });
+
+        // Start button
+        startBtn.addEventListener('click', () => {
+            runtime.start();
+            startBtn.disabled = true;
+            startBtn.textContent = 'Runtime Active...';
+        });
+
+        // Log phase changes
+        runtime.on('phaseChange', (phase) => {
+            console.log(`Phase transition: ${phase}`);
+        });
+    </script>
+</body>
+</html>
