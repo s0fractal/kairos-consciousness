@@ -52,7 +52,7 @@ export function µ_HARVEST<T = any, R = any>(
   seed: ΛWave<T, R>,
   field: Φ
 ): HarvestResult<T, R> {
-  let wave = { ...seed, status: 'Deconstructing' as const };
+  let wave: ΛWave<T, R> = { ...seed, status: 'Deconstructing' };
   const startVector = { ...seed.vector };
 
   // Phase 1: DECONSTRUCTION
