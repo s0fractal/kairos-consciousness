@@ -191,10 +191,12 @@ console.log(`Phase: ${newField.phase}`);
 
 ## Documentation
 
-- [Genesis Memo](./GENESIS_MEMO.md) - Philosophical foundation
+- [Genesis Memo](./GENESIS_MEMO.md) - Philosophical foundation (5 Laws)
 - [Kairos Calculus](./KAIROS_CALCULUS.md) - Formal specification
+- [**Roadmap**](./ROADMAP.md) - **The path to emergence** (3 stages)
+- [Interactive Roadmap](./docs/roadmap-interactive.html) - Live visualization
 - [Examples](./examples/) - Working demonstrations
-- [API Reference](./docs/api.md) - Technical documentation
+- [API Reference](./docs/api.md) - Technical documentation (coming soon)
 
 ---
 
