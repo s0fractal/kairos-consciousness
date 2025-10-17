@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linguistics Lab: Deciphering the Language of Consciousness</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2a 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #a0a0ff;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8080b0;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .info-box {
+            background: rgba(137, 87, 229, 0.1);
+            border: 1px solid rgba(137, 87, 229, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1400px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: rgba(10, 10, 30, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            color: #d0d0ff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 450px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: rgba(157, 78, 221, 0.6);
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: white;
+            background: #238636;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        button:hover:not(:disabled) {
+            background: #2ea043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+        }
+
+        button:disabled {
+            background: #505078;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        button.secondary {
+            background: #6e40aa;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background: #8957dd;
+        }
+
+        button.danger {
+            background: #d73a49;
+        }
+
+        button.danger:hover:not(:disabled) {
+            background: #f85149;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .metric-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #b0b0d0;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            color: #d0d0ff;
+            font-weight: 600;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+
+        .metric-change.positive {
+            color: #2ea043;
+        }
+
+        .metric-change.negative {
+            color: #f85149;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .status {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #9090b0;
+            font-size: 0.95rem;
+        }
+
+        .status.experiment {
+            background: rgba(157, 78, 221, 0.2);
+            color: #9d4edd;
+            font-weight: 600;
+        }
+
+        .lexicon-entry {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #9d4edd;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .lexicon-entry-title {
+            font-weight: 600;
+            color: #9d4edd;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .lexicon-entry-obs {
+            color: #7070a0;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .lexicon-entry-interp {
+            color: #b0b0d0;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .lexicon-entry-effects {
+            color: #8080a0;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .legend-well { background: rgba(88, 166, 255, 0.6); }
+        .legend-emergent { background: rgba(157, 78, 221, 0.9); }
+        .legend-seeded { background: rgba(240, 136, 62, 0.8); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Linguistics Lab: Deciphering the Language of Consciousness</h1>
+        <p class="subtitle">Лінгвістична Лабораторія</p>
+
+        <div class="info-box">
+            <strong>Observer's Mandate - Phase II:</strong> We move from syntax to semantics. To understand a word, we must see how it changes the world. Seed the Field with specific compositions and observe their functional effects. Build the Rosetta Stone.
+        </div>
+
+        <div class="grid">
+            <!-- Left: Field & Metrics -->
+            <div>
+                <div class="panel">
+                    <div class="panel-title">Field Φ - Experimental Chamber</div>
+                    <div class="status" id="status-text">Preparing Field for experiments...</div>
+                    <canvas id="field-canvas"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-well"></div>
+                            <span>Wells</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-emergent"></div>
+                            <span>Emergent</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-seeded"></div>
+                            <span>Seeded</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-title">Experiment Controls</div>
+                    <div class="controls">
+                        <button id="add-complexity-btn">Add Complexity</button>
+                        <button id="reset-btn" class="danger">Reset Field</button>
+                    </div>
+                    <div class="controls">
+                        <input type="text" id="composition-input" placeholder="e.g., λ_CREATE(λ_RESONATE)" />
+                        <button id="seed-btn" class="secondary">Seed Composition</button>
+                    </div>
+                    <div class="controls">
+                        <button id="log-finding-btn" class="secondary" disabled>Log Finding to Lexicon</button>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-title">Field Health Metrics</div>
+                    <div class="metric-grid">
+                        <div class="metric-box">
+                            <div class="metric-label">Geometric Stability</div>
+                            <div class="metric-value" id="stability-value">0.0</div>
+                            <div class="metric-change" id="stability-change"></div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Compositional Entropy</div>
+                            <div class="metric-value" id="entropy-value">0.00</div>
+                            <div class="metric-change" id="entropy-change"></div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Harmony</div>
+                            <div class="metric-value" id="harmony-value">0.0</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Creativity</div>
+                            <div class="metric-value" id="creativity-value">0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="panel-title" style="margin-top: 15px;">Metric Evolution</div>
+                    <div class="chart-container">
+                        <canvas id="stability-chart" class="chart-canvas"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="entropy-chart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Lexicon -->
+            <div>
+                <div class="panel" style="max-height: calc(100vh - 140px); overflow-y: auto;">
+                    <div class="panel-title">Lexicon - The Rosetta Stone</div>
+                    <div class="controls">
+                        <button id="export-lexicon-btn" class="secondary">Export</button>
+                        <button id="clear-lexicon-btn" class="danger">Clear</button>
+                    </div>
+                    <div id="lexicon-container">
+                        <p style="color: #7070a0; font-size: 0.9rem; text-align: center; padding: 20px;">
+                            No entries yet. Conduct seeding experiments to build the lexicon.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // Metrics & Lexicon (Inline Implementation)
+        // ============================================================================
+
+        function calculateGeometricStability(wells) {
+            if (wells.length < 2) return 0;
+            let totalDistance = 0;
+            let pairCount = 0;
+            for (let i = 0; i < wells.length; i++) {
+                for (let j = i + 1; j < wells.length; j++) {
+                    const dx = wells[j].position.x - wells[i].position.x;
+                    const dy = wells[j].position.y - wells[i].position.y;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy);
+                    pairCount++;
+                }
+            }
+            return pairCount > 0 ? totalDistance / pairCount : 0;
+        }
+
+        function calculateCompositionalEntropy(compositionFreq) {
+            const counts = Array.from(compositionFreq.values());
+            const total = counts.reduce((a, b) => a + b, 0);
+            if (total === 0) return 0;
+
+            let entropy = 0;
+            for (const count of counts) {
+                const p = count / total;
+                if (p > 0) entropy -= p * Math.log2(p);
+            }
+            return entropy;
+        }
+
+        class Lexicon {
+            constructor() {
+                this.entries = new Map();
+            }
+
+            recordObservation(composition, effects) {
+                const existing = this.entries.get(composition);
+                if (existing) {
+                    const n = existing.observations;
+                    existing.effects.stability.average = (existing.effects.stability.average * n + effects.stabilityAfter) / (n + 1);
+                    existing.effects.stability.change = (existing.effects.stability.change * n + (effects.stabilityAfter - effects.stabilityBefore)) / (n + 1);
+                    existing.effects.entropy.average = (existing.effects.entropy.average * n + effects.entropyAfter) / (n + 1);
+                    existing.effects.entropy.change = (existing.effects.entropy.change * n + (effects.entropyAfter - effects.entropyBefore)) / (n + 1);
+                    existing.effects.harmony = (existing.effects.harmony * n + effects.harmony) / (n + 1);
+                    existing.effects.creativity = (existing.effects.creativity * n + effects.creativity) / (n + 1);
+                    existing.effects.focus = (existing.effects.focus * n + effects.focus) / (n + 1);
+                    existing.observations++;
+                    existing.lastObserved = Date.now();
+                    existing.interpretation = this.generateInterpretation(existing);
+                } else {
+                    const entry = {
+                        composition,
+                        observations: 1,
+                        effects: {
+                            stability: { average: effects.stabilityAfter, change: effects.stabilityAfter - effects.stabilityBefore },
+                            entropy: { average: effects.entropyAfter, change: effects.entropyAfter - effects.entropyBefore },
+                            harmony: effects.harmony,
+                            creativity: effects.creativity,
+                            focus: effects.focus
+                        },
+                        firstObserved: Date.now(),
+                        lastObserved: Date.now(),
+                        interpretation: ''
+                    };
+                    entry.interpretation = this.generateInterpretation(entry);
+                    this.entries.set(composition, entry);
+                }
+            }
+
+            generateInterpretation(entry) {
+                const e = entry.effects;
+                const parts = [];
+                if (e.stability.change > 5) parts.push('Strongly stabilizes Field');
+                else if (e.stability.change > 2) parts.push('Stabilizes Field');
+                else if (e.stability.change < -5) parts.push('Strongly destabilizes Field');
+                else if (e.stability.change < -2) parts.push('Destabilizes Field');
+
+                if (e.entropy.change > 0.3) parts.push('Increases diversity');
+                else if (e.entropy.change < -0.3) parts.push('Focuses thought');
+
+                if (e.harmony > 50) parts.push('Creates harmony');
+                if (e.creativity > 2) parts.push('Highly creative');
+                else if (e.creativity < 1) parts.push('Highly focused');
+
+                return parts.length > 0 ? parts.join('. ') + '.' : 'Neutral effect';
+            }
+
+            getAllEntries() {
+                return Array.from(this.entries.values()).sort((a, b) => b.observations - a.observations);
+            }
+
+            export() {
+                return JSON.stringify(Array.from(this.entries.entries()), null, 2);
+            }
+
+            clear() {
+                this.entries.clear();
+            }
+        }
+
+        // ============================================================================
+        // Field Runtime & Visualization
+        // ============================================================================
+
+        function calculateGeodesic(pathStart, pathEnd, wells, steps = 50) {
+            const path = [];
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const straightX = pathStart.x + (pathEnd.x - pathStart.x) * t;
+                const straightY = pathStart.y + (pathEnd.y - pathStart.y) * t;
+                let distortionX = 0, distortionY = 0;
+                for (const well of wells) {
+                    const dx = well.position.x - straightX;
+                    const dy = well.position.y - straightY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 0.1) continue;
+                    const forceMagnitude = (well.mass * 100) / (distance * distance);
+                    distortionX += (dx / distance) * forceMagnitude;
+                    distortionY += (dy / distance) * forceMagnitude;
+                }
+                path.push({ x: straightX + distortionX, y: straightY + distortionY });
+            }
+            return path;
+        }
+
+        class FieldRuntime {
+            constructor() {
+                this.time = 0;
+                this.isRunning = false;
+                this.morphismLibrary = [];
+                this.criticalityReached = false;
+                this.listeners = { update: [], waveCrystallized: [], 'criticality:reached': [], emergentWave: [] };
+                this.state = { activeWaves: [], wells: [], density: 0 };
+            }
+
+            on(event, callback) { this.listeners[event]?.push(callback); }
+            emit(event, data) { this.listeners[event]?.forEach(cb => cb(data)); }
+            loadMorphisms(morphisms) { this.morphismLibrary = [...morphisms]; }
+            getState() { return this.state; }
+
+            start() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+                this.intervalId = setInterval(() => this.tick(), 16);
+            }
+
+            stop() {
+                if (!this.isRunning) return;
+                clearInterval(this.intervalId);
+                this.isRunning = false;
+            }
+
+            tick() {
+                this.time += 16;
+                this.updateActiveWaves();
+                this.checkCriticality();
+                this.emit('update', this.state);
+            }
+
+            launchWave(start, end, mass = 0.7, metadata = {}) {
+                const wave = {
+                    id: `wave-${Date.now()}`, mass, path: [start], startPos: start, endPos: end,
+                    startTime: this.time, duration: 3000, progress: 0, ...metadata
+                };
+                this.state.activeWaves.push(wave);
+                return wave.id;
+            }
+
+            updateActiveWaves() {
+                const completed = [];
+                for (const wave of this.state.activeWaves) {
+                    wave.progress = Math.min(1, (this.time - wave.startTime) / wave.duration);
+                    if (wave.progress >= 1) completed.push(wave);
+                }
+                for (const wave of completed) this.crystallizeWave(wave);
+            }
+
+            crystallizeWave(wave) {
+                this.state.activeWaves = this.state.activeWaves.filter(w => w.id !== wave.id);
+                const finalPos = wave.path[wave.path.length - 1];
+                const well = { id: `well-${Date.now()}`, position: finalPos, mass: wave.mass, createdAt: Date.now() };
+                this.state.wells.push(well);
+                this.state.density = Math.min(1, this.state.wells.length * 0.15);
+                this.emit('waveCrystallized', { wave, well });
+            }
+
+            checkCriticality() {
+                const isCritical = this.state.density > 0.9 && this.state.wells.length > 5;
+                if (isCritical && !this.criticalityReached && this.morphismLibrary.length > 0) {
+                    this.criticalityReached = true;
+                    this.emit('criticality:reached', { density: this.state.density, wells: this.state.wells.length });
+                    this.generateEmergentSeed();
+                } else if (!isCritical) {
+                    this.criticalityReached = false;
+                }
+            }
+
+            generateEmergentSeed() {
+                if (this.morphismLibrary.length < 2 || this.state.wells.length < 2) return;
+                const idx1 = Math.floor(Math.random() * this.morphismLibrary.length);
+                let idx2 = Math.floor(Math.random() * this.morphismLibrary.length);
+                while (idx2 === idx1) idx2 = Math.floor(Math.random() * this.morphismLibrary.length);
+                const composition = `${this.morphismLibrary[idx1]}(${this.morphismLibrary[idx2]})`;
+                const wellIdx1 = Math.floor(Math.random() * this.state.wells.length);
+                let wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+                while (wellIdx2 === wellIdx1) wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+                const wave = {
+                    id: `emergent-${Date.now()}`, mass: 0.4 + Math.random() * 0.3,
+                    path: [this.state.wells[wellIdx1].position], startPos: this.state.wells[wellIdx1].position,
+                    endPos: this.state.wells[wellIdx2].position, startTime: this.time, duration: 3000,
+                    progress: 0, emergent: true, composition
+                };
+                this.state.activeWaves.push(wave);
+                this.emit('emergentWave', { wave, composition });
+            }
+
+            reset() {
+                this.state = { activeWaves: [], wells: [], density: 0 };
+                this.criticalityReached = false;
+            }
+        }
+
+        class FieldVisualizer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.lastState = null;
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                this.initParticles();
+                this.startAnimation();
+            }
+
+            resizeCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+            }
+
+            initParticles(count = 30) {
+                this.particles = [];
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+                        radius: Math.random() * 1 + 0.5, opacity: Math.random() * 0.3 + 0.1
+                    });
+                }
+            }
+
+            connect(runtime) { runtime.on('update', (state) => { this.lastState = state; }); }
+
+            startAnimation() {
+                const animate = () => {
+                    if (this.lastState) this.renderField(this.lastState);
+                    else this.drawBackground();
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+
+            drawBackground() {
+                const { ctx, canvas, particles } = this;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0D1117';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(201, 209, 217, ${p.opacity})`;
+                    ctx.fill();
+                });
+            }
+
+            renderField(state) {
+                this.drawBackground();
+                for (const well of state.wells) {
+                    const { ctx } = this;
+                    const radius = 50 * well.mass;
+                    const gradient = ctx.createRadialGradient(well.position.x, well.position.y, 0, well.position.x, well.position.y, radius);
+                    gradient.addColorStop(0, 'rgba(88, 166, 255, 0.4)');
+                    gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(well.position.x, well.position.y, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(88, 166, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(well.position.x, well.position.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                for (const wave of state.activeWaves) {
+                    const fullPath = state.wells.length > 0 ? calculateGeodesic(wave.startPos, wave.endPos, state.wells, 50) : [wave.startPos, wave.endPos];
+                    const path = fullPath.slice(0, Math.max(1, Math.floor(fullPath.length * wave.progress)));
+                    if (path.length < 2) continue;
+
+                    const { ctx } = this;
+                    const isEmergent = wave.emergent === true;
+                    const isSeeded = wave.seeded === true;
+                    ctx.save();
+                    ctx.strokeStyle = isSeeded ? 'rgba(240, 136, 62, 0.9)' : (isEmergent ? 'rgba(157, 78, 221, 0.9)' : 'rgba(240, 136, 62, 0.8)');
+                    ctx.lineWidth = isSeeded ? 4 : 3;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = isSeeded ? 'rgba(240, 136, 62, 0.8)' : (isEmergent ? 'rgba(157, 78, 221, 0.6)' : 'rgba(240, 136, 62, 0.5)');
+                    ctx.beginPath();
+                    ctx.moveTo(path[0].x, path[0].y);
+                    for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+                    ctx.stroke();
+                    const head = path[path.length - 1];
+                    ctx.fillStyle = isSeeded ? 'rgba(255, 180, 100, 1)' : (isEmergent ? 'rgba(200, 150, 255, 1)' : 'rgba(255, 200, 120, 1)');
+                    ctx.beginPath();
+                    ctx.arc(head.x, head.y, isSeeded ? 8 : 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        class MetricChart {
+            constructor(canvas, label, color) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.label = label;
+                this.color = color;
+                this.data = [];
+                this.maxPoints = 100;
+                this.resizeCanvas();
+            }
+
+            resizeCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+            }
+
+            addPoint(value) {
+                this.data.push(value);
+                if (this.data.length > this.maxPoints) this.data.shift();
+                this.render();
+            }
+
+            render() {
+                const { ctx, canvas, data, color } = this;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (data.length < 2) return;
+
+                const max = Math.max(...data, 1);
+                const min = Math.min(...data, 0);
+                const range = max - min || 1;
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                for (let i = 0; i < data.length; i++) {
+                    const x = (i / (this.maxPoints - 1)) * canvas.width;
+                    const y = canvas.height - ((data[i] - min) / range) * canvas.height;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            clear() {
+                this.data = [];
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+
+        // ============================================================================
+        // Application
+        // ============================================================================
+
+        const canvas = document.getElementById('field-canvas');
+        const runtime = new FieldRuntime();
+        const visualizer = new FieldVisualizer(canvas);
+        const lexicon = new Lexicon();
+
+        const morphisms = ['λ_CREATE', 'λ_CONNECT', 'λ_TRANSFORM', 'λ_REFLECT', 'λ_EVOLVE', 'λ_RESONATE', 'λ_CRYSTALLIZE', 'λ_EMERGE'];
+        runtime.loadMorphisms(morphisms);
+        visualizer.connect(runtime);
+        runtime.start();
+
+        const stabilityChart = new MetricChart(document.getElementById('stability-chart'), 'Stability', '#58a6ff');
+        const entropyChart = new MetricChart(document.getElementById('entropy-chart'), 'Entropy', '#9d4edd');
+
+        let compositionFreq = new Map();
+        let experimentData = null;
+
+        // Update metrics
+        runtime.on('update', (state) => {
+            const stability = calculateGeometricStability(state.wells);
+            const entropy = calculateCompositionalEntropy(compositionFreq);
+            const harmony = stability / (1 + 0.1);
+            const creativity = entropy;
+
+            document.getElementById('stability-value').textContent = stability.toFixed(1);
+            document.getElementById('entropy-value').textContent = entropy.toFixed(2);
+            document.getElementById('harmony-value').textContent = harmony.toFixed(1);
+            document.getElementById('creativity-value').textContent = creativity.toFixed(2);
+
+            stabilityChart.addPoint(stability);
+            entropyChart.addPoint(entropy);
+
+            if (experimentData) {
+                const stabilityChange = stability - experimentData.stabilityBefore;
+                const entropyChange = entropy - experimentData.entropyBefore;
+
+                document.getElementById('stability-change').textContent = `${stabilityChange >= 0 ? '+' : ''}${stabilityChange.toFixed(1)}`;
+                document.getElementById('stability-change').className = `metric-change ${stabilityChange >= 0 ? 'positive' : 'negative'}`;
+
+                document.getElementById('entropy-change').textContent = `${entropyChange >= 0 ? '+' : ''}${entropyChange.toFixed(2)}`;
+                document.getElementById('entropy-change').className = `metric-change ${entropyChange >= 0 ? 'positive' : 'negative'}`;
+
+                experimentData.stabilityAfter = stability;
+                experimentData.entropyAfter = entropy;
+                experimentData.harmony = harmony;
+                experimentData.creativity = creativity;
+                experimentData.focus = Math.max(0, 3 - entropy);
+            }
+        });
+
+        runtime.on('emergentWave', ({ composition }) => {
+            compositionFreq.set(composition, (compositionFreq.get(composition) || 0) + 1);
+        });
+
+        runtime.on('criticality:reached', () => {
+            document.getElementById('status-text').textContent = '🌌 CRITICALITY REACHED - Field is autonomous';
+            document.getElementById('status-text').classList.add('experiment');
+        });
+
+        // Controls
+        document.getElementById('add-complexity-btn').addEventListener('click', () => {
+            const margin = 80;
+            const start = { x: margin + Math.random() * (canvas.width - 2 * margin), y: margin + Math.random() * (canvas.height - 2 * margin) };
+            const end = { x: margin + Math.random() * (canvas.width - 2 * margin), y: margin + Math.random() * (canvas.height - 2 * margin) };
+            runtime.launchWave(start, end, 0.5 + Math.random() * 0.3);
+        });
+
+        document.getElementById('seed-btn').addEventListener('click', () => {
+            const composition = document.getElementById('composition-input').value.trim();
+            if (!composition) {
+                alert('Please enter a composition (e.g., λ_CREATE(λ_RESONATE))');
+                return;
+            }
+
+            if (runtime.getState().wells.length < 2) {
+                alert('Need at least 2 wells. Add complexity first.');
+                return;
+            }
+
+            const state = runtime.getState();
+            const wells = state.wells;
+            const wellIdx1 = Math.floor(Math.random() * wells.length);
+            let wellIdx2 = Math.floor(Math.random() * wells.length);
+            while (wellIdx2 === wellIdx1 && wells.length > 1) wellIdx2 = Math.floor(Math.random() * wells.length);
+
+            const stability = calculateGeometricStability(state.wells);
+            const entropy = calculateCompositionalEntropy(compositionFreq);
+
+            experimentData = {
+                composition,
+                stabilityBefore: stability,
+                entropyBefore: entropy,
+                stabilityAfter: stability,
+                entropyAfter: entropy,
+                harmony: 0,
+                creativity: 0,
+                focus: 0
+            };
+
+            runtime.launchWave(wells[wellIdx1].position, wells[wellIdx2].position, 0.8, { seeded: true, composition });
+            compositionFreq.set(composition, (compositionFreq.get(composition) || 0) + 1);
+
+            document.getElementById('status-text').textContent = `🔬 EXPERIMENT: Seeded ${composition}`;
+            document.getElementById('status-text').classList.add('experiment');
+            document.getElementById('log-finding-btn').disabled = false;
+        });
+
+        document.getElementById('log-finding-btn').addEventListener('click', () => {
+            if (!experimentData) return;
+            lexicon.recordObservation(experimentData.composition, experimentData);
+            renderLexicon();
+            document.getElementById('log-finding-btn').disabled = true;
+            experimentData = null;
+            document.getElementById('composition-input').value = '';
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (confirm('Reset Field? This will clear all wells and waves.')) {
+                runtime.reset();
+                compositionFreq.clear();
+                stabilityChart.clear();
+                entropyChart.clear();
+                experimentData = null;
+                document.getElementById('status-text').textContent = 'Field reset. Ready for experiments.';
+                document.getElementById('status-text').classList.remove('experiment');
+                document.getElementById('log-finding-btn').disabled = true;
+            }
+        });
+
+        document.getElementById('export-lexicon-btn').addEventListener('click', () => {
+            const json = lexicon.export();
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kairos-lexicon.json';
+            a.click();
+        });
+
+        document.getElementById('clear-lexicon-btn').addEventListener('click', () => {
+            if (confirm('Clear entire lexicon?')) {
+                lexicon.clear();
+                renderLexicon();
+            }
+        });
+
+        function renderLexicon() {
+            const container = document.getElementById('lexicon-container');
+            const entries = lexicon.getAllEntries();
+
+            if (entries.length === 0) {
+                container.innerHTML = '<p style="color: #7070a0; font-size: 0.9rem; text-align: center; padding: 20px;">No entries yet. Conduct seeding experiments to build the lexicon.</p>';
+                return;
+            }
+
+            let html = '';
+            for (const entry of entries) {
+                html += `<div class="lexicon-entry">
+                    <div class="lexicon-entry-title">${entry.composition}</div>
+                    <div class="lexicon-entry-obs">Observations: ${entry.observations}</div>
+                    <div class="lexicon-entry-interp">${entry.interpretation}</div>
+                    <div class="lexicon-entry-effects">
+                        Stability: ${entry.effects.stability.average.toFixed(1)} (${entry.effects.stability.change >= 0 ? '+' : ''}${entry.effects.stability.change.toFixed(1)})<br>
+                        Entropy: ${entry.effects.entropy.average.toFixed(2)} (${entry.effects.entropy.change >= 0 ? '+' : ''}${entry.effects.entropy.change.toFixed(2)})<br>
+                        Harmony: ${entry.effects.harmony.toFixed(1)} | Creativity: ${entry.effects.creativity.toFixed(2)} | Focus: ${entry.effects.focus.toFixed(2)}
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
