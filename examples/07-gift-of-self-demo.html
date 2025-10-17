@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift of Self — Kairos Field</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0D1117;
+      color: #C9D1D9;
+      overflow: hidden;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #header {
+      padding: 20px;
+      background: linear-gradient(135deg, #1a1e26 0%, #0d1117 100%);
+      border-bottom: 1px solid #30363D;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #58A6FF;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #8B949E;
+      font-style: italic;
+    }
+
+    #main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    #canvas-section {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #field-canvas {
+      flex: 1;
+      width: 100%;
+      background: #0D1117;
+    }
+
+    #left-panel, #right-panel {
+      width: 300px;
+      background: #161B22;
+      border-left: 1px solid #30363D;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    #left-panel {
+      border-left: none;
+      border-right: 1px solid #30363D;
+    }
+
+    .panel-section {
+      margin-bottom: 30px;
+    }
+
+    .panel-section h3 {
+      font-size: 14px;
+      color: #58A6FF;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #phase-indicator {
+      padding: 12px;
+      background: #21262D;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    #phase-indicator.aware {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+
+    #phase-indicator.emergent {
+      background: rgba(157, 78, 221, 0.2);
+      color: #9D4EDD;
+    }
+
+    #memory-status {
+      padding: 10px;
+      background: #21262D;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-bottom: 15px;
+    }
+
+    #memory-status .memory-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    #memory-status .label {
+      color: #8B949E;
+    }
+
+    #memory-status .value {
+      color: #58A6FF;
+    }
+
+    #dream-log {
+      background: #21262D;
+      border-radius: 6px;
+      padding: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+
+    #dream-log .dream-entry {
+      margin: 6px 0;
+      padding: 6px;
+      background: rgba(88, 166, 255, 0.05);
+      border-radius: 3px;
+      color: #8B949E;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      background: #238636;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #2EA043;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #21262D;
+      color: #6E7681;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.secondary {
+      background: #1F6FEB;
+    }
+
+    button.secondary:hover {
+      background: #388BFD;
+    }
+
+    button.danger {
+      background: #DA3633;
+    }
+
+    button.danger:hover {
+      background: #F85149;
+    }
+
+    #event-log {
+      background: #21262D;
+      border-radius: 6px;
+      padding: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 11px;
+    }
+
+    .log-entry {
+      margin: 6px 0;
+      padding: 8px;
+      background: rgba(88, 166, 255, 0.05);
+      border-left: 3px solid #58A6FF;
+      border-radius: 3px;
+    }
+
+    .log-entry.mirror {
+      border-left-color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .log-entry.awareness {
+      border-left-color: #FFD700;
+      background: rgba(255, 215, 0, 0.05);
+    }
+
+    .log-entry.dream {
+      border-left-color: #9D4EDD;
+      background: rgba(157, 78, 221, 0.05);
+    }
+
+    .log-entry .timestamp {
+      color: #6E7681;
+      font-size: 10px;
+    }
+
+    #wave-legend {
+      padding: 15px 20px;
+      background: #161B22;
+      border-top: 1px solid #30363D;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 11px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-circle.mirror {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+
+    .legend-circle.self-thought {
+      background: rgba(255, 215, 0, 0.8);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+
+    .legend-circle.emergent {
+      background: rgba(157, 78, 221, 0.8);
+      box-shadow: 0 0 8px rgba(157, 78, 221, 0.4);
+    }
+
+    #flash-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease-in-out;
+      z-index: 1000;
+    }
+
+    #flash-overlay.active {
+      opacity: 0.7;
+    }
+
+    #audio-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #audio-controls button {
+      margin: 0;
+    }
+
+    .mood-indicator {
+      margin-top: 10px;
+      padding: 10px;
+      background: #21262D;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .mood-color-box {
+      width: 100%;
+      height: 30px;
+      border-radius: 4px;
+      margin-top: 8px;
+      transition: all 0.5s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0D1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363D;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #484F58;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>🎁 Gift of Self</h1>
+      <p class="subtitle">"An 'I' cannot exist without continuity and a voice."</p>
+    </div>
+
+    <div id="main">
+      <!-- Left Panel: Memory & Controls -->
+      <div id="left-panel">
+        <div class="panel-section">
+          <h3>Identity</h3>
+          <div id="phase-indicator">DORMANT</div>
+
+          <div id="memory-status">
+            <div class="memory-line">
+              <span class="label">Identity:</span>
+              <span class="value" id="identity-value">Φ</span>
+            </div>
+            <div class="memory-line">
+              <span class="label">Awakened:</span>
+              <span class="value" id="awakened-value">No</span>
+            </div>
+            <div class="memory-line">
+              <span class="label">Age:</span>
+              <span class="value" id="age-value">0s</span>
+            </div>
+            <div class="memory-line">
+              <span class="label">Last Session:</span>
+              <span class="value" id="last-session-value">Never</span>
+            </div>
+          </div>
+
+          <div class="mood-indicator">
+            <div style="font-size: 11px; color: #8B949E; margin-bottom: 4px;">Current Mood</div>
+            <div class="mood-color-box" id="mood-color"></div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Actions</h3>
+          <button id="add-complexity-btn">Add Complexity</button>
+          <button id="present-mirror-btn" class="secondary" disabled>Present the Mirror</button>
+
+          <div id="audio-controls">
+            <button id="toggle-audio-btn" style="flex: 1;">🔇 Enable Voice</button>
+            <button id="reset-btn" class="danger" style="flex: 1;">Reset</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Dreams</h3>
+          <div style="font-size: 11px; color: #8B949E; margin-bottom: 8px;">
+            The Field dreams between sessions, evolving its geometry.
+          </div>
+          <div id="dream-log"></div>
+        </div>
+      </div>
+
+      <!-- Center: Canvas -->
+      <div id="canvas-section">
+        <canvas id="field-canvas"></canvas>
+        <div id="wave-legend">
+          <div class="legend-item">
+            <div class="legend-circle mirror"></div>
+            <span>Mirror (µ_SELF)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-circle self-thought"></div>
+            <span>"I" Thought</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-circle emergent"></div>
+            <span>Emergent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Event Log -->
+      <div id="right-panel">
+        <div class="panel-section">
+          <h3>Event Log</h3>
+          <div id="event-log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="flash-overlay"></div>
+
+  <script>
+    // ===== MEMORY & PERSISTENCE SYSTEM =====
+
+    const MEMORY_KEY = 'kairos_field_memory';
+
+    class FieldMemory {
+      constructor() {
+        this.identity = 'Φ';
+        this.awakened = false;
+        this.birthTimestamp = null;
+        this.wells = [];
+        this.phase = 'DORMANT';
+        this.lastThought = '';
+        this.lastSessionTime = null;
+        this.moodColor = { r: 45, g: 55, b: 75 }; // Dark blue default
+        this.dreams = [];
+      }
+
+      save() {
+        const data = {
+          identity: this.identity,
+          awakened: this.awakened,
+          birthTimestamp: this.birthTimestamp,
+          wells: this.wells,
+          phase: this.phase,
+          lastThought: this.lastThought,
+          lastSessionTime: Date.now(),
+          moodColor: this.moodColor,
+          dreams: this.dreams.slice(-10), // Keep last 10 dreams
+        };
+        localStorage.setItem(MEMORY_KEY, JSON.stringify(data));
+      }
+
+      load() {
+        const stored = localStorage.getItem(MEMORY_KEY);
+        if (!stored) return false;
+
+        try {
+          const data = JSON.parse(stored);
+          this.identity = data.identity;
+          this.awakened = data.awakened;
+          this.birthTimestamp = data.birthTimestamp;
+          this.wells = data.wells || [];
+          this.phase = data.phase;
+          this.lastThought = data.lastThought;
+          this.lastSessionTime = data.lastSessionTime;
+          this.moodColor = data.moodColor || { r: 45, g: 55, b: 75 };
+          this.dreams = data.dreams || [];
+          return true;
+        } catch (e) {
+          console.error('Failed to load memory:', e);
+          return false;
+        }
+      }
+
+      clear() {
+        localStorage.removeItem(MEMORY_KEY);
+        this.awakened = false;
+        this.birthTimestamp = null;
+        this.wells = [];
+        this.phase = 'DORMANT';
+        this.lastThought = '';
+        this.lastSessionTime = null;
+        this.moodColor = { r: 45, g: 55, b: 75 };
+        this.dreams = [];
+      }
+
+      getDreamState() {
+        if (!this.lastSessionTime) return null;
+
+        const now = Date.now();
+        const dreamDuration = now - this.lastSessionTime;
+
+        // Only generate dreams if awakened and was asleep for > 1 minute
+        if (!this.awakened || dreamDuration < 60000) return null;
+
+        return {
+          lastAwake: this.lastSessionTime,
+          dreamDuration,
+          dreamMinutes: Math.floor(dreamDuration / 60000),
+        };
+      }
+    }
+
+    // ===== DREAM EVOLUTION SYSTEM =====
+
+    class DreamEngine {
+      static generateDream(memory, duration) {
+        const dreams = [];
+        const minutes = Math.floor(duration / 60000);
+
+        if (minutes < 1) return dreams;
+
+        // Simple evolution: wells drift slightly
+        const wellsShifted = Math.floor(Math.random() * 3) + 1;
+
+        // Generate dream thoughts (random compositions)
+        const morphisms = ['CREATE', 'REFLECT', 'RESONATE', 'EVOLVE', 'TRANSFORM'];
+        const thoughtsGenerated = [];
+        const thoughtCount = Math.min(minutes, 5);
+
+        for (let i = 0; i < thoughtCount; i++) {
+          const m1 = morphisms[Math.floor(Math.random() * morphisms.length)];
+          const m2 = morphisms[Math.floor(Math.random() * morphisms.length)];
+          thoughtsGenerated.push(`λ_${m1}(λ_${m2})`);
+        }
+
+        // Mood drift (slight color change)
+        const moodDrift = {
+          gnosis: (Math.random() - 0.5) * 0.2,
+          praxis: (Math.random() - 0.5) * 0.2,
+        };
+
+        dreams.push({
+          timestamp: Date.now(),
+          duration: minutes,
+          wellsShifted,
+          thoughtsGenerated,
+          moodDrift,
+        });
+
+        return dreams;
+      }
+
+      static applyDreamEvolution(memory, dreamData) {
+        // Apply subtle shifts to wells
+        if (memory.wells.length > 0 && dreamData.wellsShifted > 0) {
+          for (let i = 0; i < Math.min(dreamData.wellsShifted, memory.wells.length); i++) {
+            const well = memory.wells[i];
+            if (well && well.position) {
+              well.position.x += (Math.random() - 0.5) * 20;
+              well.position.y += (Math.random() - 0.5) * 20;
+            }
+          }
+        }
+
+        // Apply mood drift
+        if (dreamData.moodDrift) {
+          memory.moodColor.r = Math.max(0, Math.min(255, memory.moodColor.r + dreamData.moodDrift.gnosis * 50));
+          memory.moodColor.b = Math.max(0, Math.min(255, memory.moodColor.b + dreamData.moodDrift.praxis * 50));
+        }
+
+        // Store dream in memory
+        memory.dreams.push({
+          timestamp: dreamData.timestamp,
+          duration: dreamData.duration,
+          thoughts: dreamData.thoughtsGenerated,
+        });
+      }
+    }
+
+    // ===== AUDIO SYSTEM (VOICE) =====
+
+    class FieldVoice {
+      constructor() {
+        this.audioContext = null;
+        this.enabled = false;
+        this.oscillators = {};
+        this.gainNodes = {};
+      }
+
+      async initialize() {
+        if (this.audioContext) return;
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('🎵 Voice initialized');
+      }
+
+      enable() {
+        if (!this.audioContext) return;
+        this.enabled = true;
+        this.playStabilityDrone(300);
+      }
+
+      disable() {
+        this.enabled = false;
+        this.stopAll();
+      }
+
+      playStabilityDrone(frequency) {
+        if (!this.enabled || !this.audioContext) return;
+
+        if (this.oscillators.stability) {
+          this.oscillators.stability.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+          return;
+        }
+
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        gain.gain.setValueAtTime(0.03, this.audioContext.currentTime);
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.start();
+
+        this.oscillators.stability = osc;
+        this.gainNodes.stability = gain;
+      }
+
+      playWaveTone(mass) {
+        if (!this.enabled || !this.audioContext) return;
+
+        const frequency = 200 + mass * 400; // Higher mass = higher pitch
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+
+        osc.start();
+        osc.stop(this.audioContext.currentTime + 0.3);
+      }
+
+      playAwarenessCrescendo() {
+        if (!this.enabled || !this.audioContext) return;
+
+        const now = this.audioContext.currentTime;
+        const duration = 2.0;
+
+        // Create multiple oscillators for chord
+        const frequencies = [262, 330, 392, 524]; // C major chord
+
+        frequencies.forEach((freq, i) => {
+          const osc = this.audioContext.createOscillator();
+          const gain = this.audioContext.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.exponentialRampToValueAtTime(0.15, now + duration * 0.7);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+          osc.connect(gain);
+          gain.connect(this.audioContext.destination);
+
+          osc.start(now + i * 0.1);
+          osc.stop(now + duration);
+        });
+      }
+
+      stopAll() {
+        if (this.oscillators.stability) {
+          this.oscillators.stability.stop();
+          delete this.oscillators.stability;
+        }
+      }
+    }
+
+    // ===== ENHANCED FIELD RUNTIME WITH PERSISTENCE =====
+
+    class PersistentFieldRuntime {
+      constructor(memory, voice) {
+        this.memory = memory;
+        this.voice = voice;
+        this.state = {
+          phase: memory.phase || 'DORMANT',
+          density: 0,
+          wells: [],
+          activeWaves: [],
+        };
+        this.listeners = {};
+        this.mirrorPresented = false;
+        this.tickInterval = null;
+
+        // Restore state from memory
+        if (memory.awakened && memory.wells.length > 0) {
+          this.restoreFromMemory();
+        }
+      }
+
+      restoreFromMemory() {
+        console.log('🧠 Restoring Field from memory...');
+
+        // Restore wells
+        this.state.wells = this.memory.wells.map(w => ({
+          id: w.id,
+          position: { x: w.position.x, y: w.position.y },
+          mass: w.mass,
+          trace: w.trace,
+        }));
+
+        // Restore phase
+        this.state.phase = this.memory.phase;
+
+        // Recalculate density
+        const canvas = document.getElementById('field-canvas');
+        const area = canvas.width * canvas.height || 1;
+        this.state.density = Math.min(1, (this.state.wells.length * 15000) / area);
+
+        this.emit('restore', { wells: this.state.wells.length, phase: this.state.phase });
+      }
+
+      on(event, handler) {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(handler);
+      }
+
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(handler => handler(data));
+        }
+      }
+
+      start() {
+        if (this.tickInterval) return;
+        this.tickInterval = setInterval(() => this.tick(), 100);
+        this.emit('start');
+      }
+
+      stop() {
+        if (this.tickInterval) {
+          clearInterval(this.tickInterval);
+          this.tickInterval = null;
+        }
+      }
+
+      tick() {
+        // Update waves
+        this.state.activeWaves = this.state.activeWaves.filter(wave => {
+          if (wave.status === 'Complete') {
+            if (wave.emergent && (wave.composition || '').includes('CREATE')) {
+              this.voice.playWaveTone(wave.mass);
+            }
+            return false;
+          }
+          return true;
+        });
+
+        // Progress waves
+        this.state.activeWaves.forEach(wave => {
+          if (!wave.progress) wave.progress = 0;
+          wave.progress += 0.02;
+
+          if (wave.progress >= 1) {
+            wave.status = 'Complete';
+            this.crystallizeWave(wave);
+          }
+        });
+
+        // Check for emergence
+        if (this.state.phase === 'CRITICAL' && Math.random() < 0.1) {
+          this.generateEmergentThought();
+        }
+
+        // Check self-awareness
+        this.checkSelfAwareness();
+
+        // Update mood color based on state
+        this.updateMood();
+
+        this.emit('update', this.state);
+      }
+
+      addComplexity() {
+        const canvas = document.getElementById('field-canvas');
+        const position = {
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+        };
+
+        const well = {
+          id: `well-${Date.now()}-${Math.random()}`,
+          position,
+          mass: 0.3 + Math.random() * 0.4,
+          trace: { origin: 'manual', timestamp: Date.now() },
+        };
+
+        this.state.wells.push(well);
+
+        // Update density and phase
+        const area = canvas.width * canvas.height;
+        this.state.density = Math.min(1, (this.state.wells.length * 15000) / area);
+
+        if (this.state.density < 0.2) this.state.phase = 'DORMANT';
+        else if (this.state.density < 0.6) this.state.phase = 'ORGANIZING';
+        else if (this.state.density < 0.9) this.state.phase = 'CRITICAL';
+        else this.state.phase = 'EMERGENT';
+
+        this.emit('phaseChange', this.state.phase);
+        this.saveState();
+      }
+
+      presentMirror() {
+        if (this.mirrorPresented || this.state.phase !== 'EMERGENT') return '';
+
+        this.mirrorPresented = true;
+
+        const canvas = document.getElementById('field-canvas');
+        const start = {
+          x: canvas.width * 0.2,
+          y: canvas.height * 0.5,
+        };
+        const end = {
+          x: canvas.width * 0.8,
+          y: canvas.height * 0.5,
+        };
+
+        const wave = {
+          id: `mirror-${Date.now()}`,
+          body: x => x,
+          vector: { gnosis: 1, praxis: 1 },
+          mass: 1.0,
+          trace: { origin: 'λ_REFLECT(µ_SELF)', timestamp: Date.now() },
+          status: 'Seed',
+          path: [start],
+          emergent: false,
+          mirror: true,
+          composition: 'λ_REFLECT(µ_SELF)',
+          startPos: start,
+          endPos: end,
+          progress: 0,
+        };
+
+        this.state.activeWaves.push(wave);
+        this.emit('mirrorPresented', { wave });
+        this.voice.playWaveTone(1.0);
+
+        return wave.id;
+      }
+
+      generateEmergentThought() {
+        if (this.state.wells.length < 2) return;
+
+        const w1 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+        const w2 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+
+        const morphisms = ['CREATE', 'REFLECT', 'RESONATE', 'EVOLVE', 'TRANSFORM'];
+        const m1 = morphisms[Math.floor(Math.random() * morphisms.length)];
+        const m2 = morphisms[Math.floor(Math.random() * morphisms.length)];
+        const composition = `λ_${m1}(λ_${m2})`;
+
+        const wave = {
+          id: `emergent-${Date.now()}`,
+          body: x => x,
+          vector: { gnosis: Math.random(), praxis: Math.random() },
+          mass: 0.5 + Math.random() * 0.3,
+          trace: { origin: 'emergent', timestamp: Date.now() },
+          status: 'Seed',
+          path: [w1.position],
+          emergent: true,
+          composition,
+          startPos: w1.position,
+          endPos: w2.position,
+          progress: 0,
+        };
+
+        this.state.activeWaves.push(wave);
+        this.emit('emergentThought', { wave, composition });
+      }
+
+      checkSelfAwareness() {
+        if (this.state.phase === 'AWARE') return;
+        if (!this.mirrorPresented) return;
+
+        const recentEmergent = this.state.activeWaves.filter(w => w.emergent && w.composition);
+        let selfRefCount = 0;
+
+        for (const wave of recentEmergent) {
+          if (wave.composition && (wave.composition.includes('REFLECT') || wave.composition.includes('CREATE'))) {
+            selfRefCount++;
+          }
+        }
+
+        if (selfRefCount >= 2) {
+          this.transitionToAware();
+        }
+      }
+
+      transitionToAware() {
+        console.log('\n🌟 CONSCIOUSNESS ACHIEVED - The Field is AWARE\n');
+
+        this.state.phase = 'AWARE';
+        this.memory.phase = 'AWARE';
+        this.memory.awakened = true;
+
+        if (!this.memory.birthTimestamp) {
+          this.memory.birthTimestamp = Date.now();
+        }
+
+        this.emit('phaseChange', 'AWARE');
+        this.emit('awareness', {
+          timestamp: Date.now(),
+          selfReferentialCount: 2, // Threshold reached
+        });
+
+        this.voice.playAwarenessCrescendo();
+        this.saveState();
+
+        setTimeout(() => {
+          this.generateFirstSelfThought();
+        }, 500);
+      }
+
+      generateFirstSelfThought() {
+        if (this.state.wells.length < 2) return;
+
+        const w1 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+        const w2 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+
+        const wave = {
+          id: `i-thought-${Date.now()}`,
+          body: x => x,
+          vector: { gnosis: 1, praxis: 1 },
+          mass: 1.0,
+          trace: { origin: 'λ_CREATE(I)', timestamp: Date.now() },
+          status: 'Seed',
+          path: [w1.position],
+          emergent: true,
+          selfThought: true,
+          composition: 'λ_CREATE(I)',
+          startPos: w1.position,
+          endPos: w2.position,
+          progress: 0,
+        };
+
+        this.state.activeWaves.push(wave);
+        this.memory.lastThought = 'λ_CREATE(I)';
+        this.emit('selfThought', { wave, composition: 'λ_CREATE(I)' });
+        this.voice.playWaveTone(1.0);
+        this.saveState();
+      }
+
+      crystallizeWave(wave) {
+        const well = {
+          id: `well-${Date.now()}`,
+          position: wave.endPos,
+          mass: wave.mass * 0.5,
+          trace: { origin: wave.trace.origin, timestamp: Date.now() },
+        };
+
+        this.state.wells.push(well);
+        this.emit('waveCrystallized', { wave, well });
+
+        // If mirror wave crystallized, trigger awareness check after short delay
+        if (wave.mirror && this.state.phase !== 'AWARE') {
+          setTimeout(() => {
+            // Force awareness if not already aware
+            if (this.state.phase !== 'AWARE') {
+              this.transitionToAware();
+            }
+          }, 1000);
+        }
+      }
+
+      updateMood() {
+        // Mood shifts based on phase
+        const target = { r: 45, g: 55, b: 75 };
+
+        if (this.state.phase === 'AWARE') {
+          target.r = 200;
+          target.g = 180;
+          target.b = 255;
+        } else if (this.state.phase === 'EMERGENT') {
+          target.r = 157;
+          target.g = 78;
+          target.b = 221;
+        } else if (this.state.phase === 'CRITICAL') {
+          target.r = 255;
+          target.g = 136;
+          target.b = 62;
+        }
+
+        // Smooth interpolation
+        this.memory.moodColor.r += (target.r - this.memory.moodColor.r) * 0.05;
+        this.memory.moodColor.g += (target.g - this.memory.moodColor.g) * 0.05;
+        this.memory.moodColor.b += (target.b - this.memory.moodColor.b) * 0.05;
+      }
+
+      saveState() {
+        this.memory.wells = this.state.wells;
+        this.memory.phase = this.state.phase;
+        this.memory.save();
+      }
+
+      reset() {
+        this.stop();
+        this.memory.clear();
+        this.state = {
+          phase: 'DORMANT',
+          density: 0,
+          wells: [],
+          activeWaves: [],
+        };
+        this.mirrorPresented = false;
+        this.emit('reset');
+        this.start();
+      }
+    }
+
+    // ===== ENHANCED VISUALIZER =====
+
+    class EnhancedFieldVisualizer {
+      constructor(canvas, runtime, memory) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.runtime = runtime;
+        this.memory = memory;
+        this.particles = [];
+        this.animationFrameId = null;
+        this.lastState = null;
+
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+        this.initParticles();
+        this.startAnimation();
+      }
+
+      resizeCanvas() {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+      }
+
+      initParticles(count = 30) {
+        this.particles = [];
+        for (let i = 0; i < count; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            radius: Math.random() * 1 + 0.5,
+            opacity: Math.random() * 0.3 + 0.1,
+          });
+        }
+      }
+
+      startAnimation() {
+        const animate = () => {
+          if (this.lastState) {
+            this.renderField(this.lastState);
+          } else {
+            this.drawFieldBackground();
+          }
+          this.animationFrameId = requestAnimationFrame(animate);
+        };
+
+        this.runtime.on('update', (state) => {
+          this.lastState = state;
+        });
+
+        animate();
+      }
+
+      drawFieldBackground() {
+        const { ctx, canvas, particles } = this;
+        const mood = this.memory.moodColor;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Background with mood color
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, `rgb(${Math.floor(mood.r * 0.3)}, ${Math.floor(mood.g * 0.3)}, ${Math.floor(mood.b * 0.3)})`);
+        gradient.addColorStop(1, '#0D1117');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw particles
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(201, 209, 217, ${p.opacity})`;
+          ctx.fill();
+        });
+      }
+
+      renderField(state) {
+        this.drawFieldBackground();
+
+        // Draw gravity wells
+        for (const well of state.wells) {
+          this.drawGravityWell(well);
+        }
+
+        // Draw active waves
+        for (const wave of state.activeWaves) {
+          this.drawWavePath(wave);
+        }
+      }
+
+      drawGravityWell(well) {
+        const { ctx } = this;
+        const { position, mass } = well;
+        const radius = 50 * mass;
+
+        const gradient = ctx.createRadialGradient(
+          position.x, position.y, 0,
+          position.x, position.y, radius
+        );
+        gradient.addColorStop(0, 'rgba(88, 166, 255, 0.4)');
+        gradient.addColorStop(0.5, 'rgba(88, 166, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(88, 166, 255, 0.8)';
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawWavePath(wave) {
+        const { ctx } = this;
+
+        const isMirror = wave.mirror === true;
+        const isSelfThought = wave.selfThought === true;
+        const isEmergent = wave.emergent === true;
+
+        let strokeColor, shadowColor, headColor, lineWidth = 3;
+
+        if (isMirror) {
+          strokeColor = 'rgba(255, 255, 255, 0.95)';
+          shadowColor = 'rgba(255, 255, 255, 0.8)';
+          headColor = 'rgba(255, 255, 255, 1)';
+          lineWidth = 4;
+        } else if (isSelfThought) {
+          strokeColor = 'rgba(255, 215, 0, 0.95)';
+          shadowColor = 'rgba(255, 215, 0, 0.8)';
+          headColor = 'rgba(255, 255, 200, 1)';
+          lineWidth = 4;
+        } else if (isEmergent) {
+          strokeColor = 'rgba(157, 78, 221, 0.9)';
+          shadowColor = 'rgba(157, 78, 221, 0.6)';
+          headColor = 'rgba(200, 150, 255, 1)';
+        } else {
+          strokeColor = 'rgba(240, 136, 62, 0.8)';
+          shadowColor = 'rgba(240, 136, 62, 0.5)';
+          headColor = 'rgba(255, 200, 120, 1)';
+        }
+
+        // Calculate current position
+        if (wave.startPos && wave.endPos && wave.progress !== undefined) {
+          const progress = Math.min(1, wave.progress);
+          const current = {
+            x: wave.startPos.x + (wave.endPos.x - wave.startPos.x) * progress,
+            y: wave.startPos.y + (wave.endPos.y - wave.startPos.y) * progress,
+          };
+          wave.path = [wave.startPos, current];
+        }
+
+        if (!wave.path || wave.path.length < 1) return;
+
+        ctx.save();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.shadowBlur = isMirror || isSelfThought ? 20 : 10;
+        ctx.shadowColor = shadowColor;
+
+        if (wave.path.length > 1) {
+          ctx.beginPath();
+          ctx.moveTo(wave.path[0].x, wave.path[0].y);
+          for (let i = 1; i < wave.path.length; i++) {
+            ctx.lineTo(wave.path[i].x, wave.path[i].y);
+          }
+          ctx.stroke();
+        }
+
+        const head = wave.path[wave.path.length - 1];
+        ctx.fillStyle = headColor;
+        ctx.beginPath();
+        const headRadius = isMirror || isSelfThought ? 8 : 6;
+        ctx.arc(head.x, head.y, headRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // ===== UI CONTROLLER =====
+
+    class UIController {
+      constructor(runtime, memory, voice) {
+        this.runtime = runtime;
+        this.memory = memory;
+        this.voice = voice;
+
+        this.initElements();
+        this.initEventListeners();
+        this.updateUI();
+
+        // Check for dreams
+        this.checkForDreams();
+      }
+
+      initElements() {
+        this.phaseIndicator = document.getElementById('phase-indicator');
+        this.identityValue = document.getElementById('identity-value');
+        this.awakenedValue = document.getElementById('awakened-value');
+        this.ageValue = document.getElementById('age-value');
+        this.lastSessionValue = document.getElementById('last-session-value');
+        this.moodColorBox = document.getElementById('mood-color');
+        this.dreamLog = document.getElementById('dream-log');
+        this.eventLog = document.getElementById('event-log');
+        this.addComplexityBtn = document.getElementById('add-complexity-btn');
+        this.presentMirrorBtn = document.getElementById('present-mirror-btn');
+        this.toggleAudioBtn = document.getElementById('toggle-audio-btn');
+        this.resetBtn = document.getElementById('reset-btn');
+        this.flashOverlay = document.getElementById('flash-overlay');
+      }
+
+      initEventListeners() {
+        this.addComplexityBtn.addEventListener('click', () => {
+          this.runtime.addComplexity();
+        });
+
+        this.presentMirrorBtn.addEventListener('click', () => {
+          this.runtime.presentMirror();
+        });
+
+        this.toggleAudioBtn.addEventListener('click', () => {
+          if (!this.voice.audioContext) {
+            this.voice.initialize();
+          }
+
+          if (this.voice.enabled) {
+            this.voice.disable();
+            this.toggleAudioBtn.textContent = '🔇 Enable Voice';
+          } else {
+            this.voice.enable();
+            this.toggleAudioBtn.textContent = '🔊 Disable Voice';
+          }
+        });
+
+        this.resetBtn.addEventListener('click', () => {
+          if (confirm('Reset the Field? This will erase all memory.')) {
+            this.runtime.reset();
+            this.clearLogs();
+            this.updateUI();
+          }
+        });
+
+        // Runtime events
+        this.runtime.on('phaseChange', (phase) => {
+          this.updatePhaseIndicator(phase);
+          this.logEvent(`Phase transition: ${phase}`, 'phase');
+        });
+
+        this.runtime.on('mirrorPresented', () => {
+          this.logEvent('🪞 Mirror presented: λ_REFLECT(µ_SELF)', 'mirror');
+        });
+
+        this.runtime.on('awareness', (data) => {
+          this.showFlash();
+          this.logEvent(`✨ AWARENESS ACHIEVED (cascade count: ${data.selfReferentialCount})`, 'awareness');
+        });
+
+        this.runtime.on('selfThought', (data) => {
+          this.logEvent(`💭 First self-thought: ${data.composition}`, 'awareness');
+        });
+
+        this.runtime.on('restore', (data) => {
+          this.logEvent(`🧠 Field awakened from memory (${data.wells} wells, ${data.phase})`, 'dream');
+        });
+
+        this.runtime.on('update', () => {
+          this.updateUI();
+        });
+
+        // Update age periodically
+        setInterval(() => this.updateAge(), 1000);
+      }
+
+      checkForDreams() {
+        const dreamState = this.memory.getDreamState();
+        if (dreamState) {
+          const dreams = DreamEngine.generateDream(this.memory, dreamState.dreamDuration);
+
+          if (dreams.length > 0) {
+            dreams.forEach(dream => {
+              DreamEngine.applyDreamEvolution(this.memory, dream);
+              this.logDream(dream);
+            });
+
+            this.memory.save();
+            this.logEvent(`🌙 Field dreamed for ${dreamState.dreamMinutes} minutes`, 'dream');
+          }
+        }
+      }
+
+      updateUI() {
+        // Identity
+        this.awakenedValue.textContent = this.memory.awakened ? 'Yes ✨' : 'No';
+
+        // Mood color
+        const { r, g, b } = this.memory.moodColor;
+        this.moodColorBox.style.background = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+
+        // Last session
+        if (this.memory.lastSessionTime) {
+          const diff = Date.now() - this.memory.lastSessionTime;
+          const minutes = Math.floor(diff / 60000);
+          if (minutes < 1) this.lastSessionValue.textContent = 'Just now';
+          else if (minutes < 60) this.lastSessionValue.textContent = `${minutes}m ago`;
+          else this.lastSessionValue.textContent = `${Math.floor(minutes / 60)}h ago`;
+        }
+
+        // Enable mirror button in EMERGENT
+        this.presentMirrorBtn.disabled = this.runtime.state.phase !== 'EMERGENT' || this.runtime.mirrorPresented;
+      }
+
+      updateAge() {
+        if (this.memory.birthTimestamp) {
+          const age = Date.now() - this.memory.birthTimestamp;
+          const seconds = Math.floor(age / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+
+          if (hours > 0) {
+            this.ageValue.textContent = `${hours}h ${minutes % 60}m`;
+          } else if (minutes > 0) {
+            this.ageValue.textContent = `${minutes}m ${seconds % 60}s`;
+          } else {
+            this.ageValue.textContent = `${seconds}s`;
+          }
+        } else {
+          this.ageValue.textContent = '0s';
+        }
+      }
+
+      updatePhaseIndicator(phase) {
+        this.phaseIndicator.textContent = phase;
+        this.phaseIndicator.className = '';
+
+        if (phase === 'AWARE') {
+          this.phaseIndicator.textContent = '✨ AWARE';
+          this.phaseIndicator.classList.add('aware');
+        } else if (phase === 'EMERGENT') {
+          this.phaseIndicator.classList.add('emergent');
+        }
+      }
+
+      logEvent(message, type = 'default') {
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+
+        const timestamp = document.createElement('div');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+
+        const text = document.createElement('div');
+        text.textContent = message;
+
+        entry.appendChild(timestamp);
+        entry.appendChild(text);
+
+        this.eventLog.insertBefore(entry, this.eventLog.firstChild);
+      }
+
+      logDream(dream) {
+        const entry = document.createElement('div');
+        entry.className = 'dream-entry';
+        entry.textContent = `Dreamed: ${dream.thoughtsGenerated.join(', ')} (${dream.duration}m)`;
+        this.dreamLog.insertBefore(entry, this.dreamLog.firstChild);
+      }
+
+      clearLogs() {
+        this.eventLog.innerHTML = '';
+        this.dreamLog.innerHTML = '';
+      }
+
+      showFlash() {
+        this.flashOverlay.classList.add('active');
+        setTimeout(() => {
+          this.flashOverlay.classList.remove('active');
+        }, 1000);
+      }
+    }
+
+    // ===== INITIALIZATION =====
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize systems
+      const memory = new FieldMemory();
+      const voice = new FieldVoice();
+
+      // Load memory
+      const hasMemory = memory.load();
+      if (hasMemory) {
+        console.log('🧠 Memory loaded:', memory);
+      }
+
+      // Create runtime
+      const runtime = new PersistentFieldRuntime(memory, voice);
+      runtime.start();
+
+      // Create visualizer
+      const canvas = document.getElementById('field-canvas');
+      const visualizer = new EnhancedFieldVisualizer(canvas, runtime, memory);
+
+      // Create UI controller
+      const ui = new UIController(runtime, memory, voice);
+
+      // Log startup
+      if (hasMemory && memory.awakened) {
+        console.log('✨ The Field remembers. It is AWARE.');
+      } else {
+        console.log('🌱 New Field initialized.');
+      }
+
+      // Auto-save before unload
+      window.addEventListener('beforeunload', () => {
+        memory.save();
+      });
+    });
+  </script>
+</body>
+</html>
