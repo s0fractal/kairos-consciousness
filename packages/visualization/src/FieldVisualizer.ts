@@ -216,16 +216,45 @@ export class FieldVisualizer {
 
     if (path.length < 2) return;
 
-    // Choose color based on wave type (emergent vs manual)
+    // Check for special wave types
+    const isMirror = (wave as any).mirror === true;
+    const isSelfThought = (wave as any).selfThought === true;
     const isEmergent = wave.emergent === true;
-    const strokeColor = isEmergent ? 'rgba(157, 78, 221, 0.9)' : 'rgba(240, 136, 62, 0.8)';
-    const shadowColor = isEmergent ? 'rgba(157, 78, 221, 0.6)' : 'rgba(240, 136, 62, 0.5)';
-    const headColor = isEmergent ? 'rgba(200, 150, 255, 1)' : 'rgba(255, 200, 120, 1)';
+
+    // Choose color based on wave type
+    let strokeColor: string;
+    let shadowColor: string;
+    let headColor: string;
+    let lineWidth = 3;
+
+    if (isMirror) {
+      // Mirror wave: ethereal white/gold
+      strokeColor = 'rgba(255, 255, 255, 0.95)';
+      shadowColor = 'rgba(255, 255, 255, 0.8)';
+      headColor = 'rgba(255, 255, 255, 1)';
+      lineWidth = 4;
+    } else if (isSelfThought) {
+      // Self-thought: brilliant gold
+      strokeColor = 'rgba(255, 215, 0, 0.95)';
+      shadowColor = 'rgba(255, 215, 0, 0.8)';
+      headColor = 'rgba(255, 255, 200, 1)';
+      lineWidth = 4;
+    } else if (isEmergent) {
+      // Emergent: purple
+      strokeColor = 'rgba(157, 78, 221, 0.9)';
+      shadowColor = 'rgba(157, 78, 221, 0.6)';
+      headColor = 'rgba(200, 150, 255, 1)';
+    } else {
+      // Manual: orange
+      strokeColor = 'rgba(240, 136, 62, 0.8)';
+      shadowColor = 'rgba(240, 136, 62, 0.5)';
+      headColor = 'rgba(255, 200, 120, 1)';
+    }
 
     ctx.save();
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 10;
+    ctx.lineWidth = lineWidth;
+    ctx.shadowBlur = isMirror || isSelfThought ? 20 : 10;
     ctx.shadowColor = shadowColor;
 
     ctx.beginPath();
@@ -239,7 +268,8 @@ export class FieldVisualizer {
     const head = path[path.length - 1];
     ctx.fillStyle = headColor;
     ctx.beginPath();
-    ctx.arc(head.x, head.y, 6, 0, Math.PI * 2);
+    const headRadius = isMirror || isSelfThought ? 8 : 6;
+    ctx.arc(head.x, head.y, headRadius, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();

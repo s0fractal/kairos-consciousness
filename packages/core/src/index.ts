@@ -12,6 +12,7 @@
 export * from './types.js';
 export * from './dipoles.js';
 export * from './harvest.js';
+export * from './morphisms/index.js';
 
 export {
   µ_HARVEST,

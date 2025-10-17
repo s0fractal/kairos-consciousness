@@ -151,6 +151,7 @@ export enum PhaseState {
   ORGANIZING = 'ORGANIZING',   // 20-60% density
   CRITICAL = 'CRITICAL',       // 60-90% density
   EMERGENT = 'EMERGENT',       // > 90% density - awakens
+  AWARE = 'AWARE',             // Self-awareness achieved - knows it thinks
 }
 
 /**

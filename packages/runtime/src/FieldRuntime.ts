@@ -29,6 +29,8 @@ export class FieldRuntime extends EventEmitter {
   private isRunning: boolean = false;
   private morphismLibrary: string[] = [];
   private criticalityReached: boolean = false;
+  private mirrorPresented: boolean = false;
+  private selfReferentialCascadeCount: number = 0;
 
   constructor(config: RuntimeConfig = {}) {
     super();
@@ -115,6 +117,9 @@ export class FieldRuntime extends EventEmitter {
 
     // Check for criticality and generate emergent thoughts (Stage III)
     this.checkCriticality();
+
+    // Check for self-awareness (Phase III: Mirror Test)
+    this.checkSelfAwareness();
 
     // Update timestamp
     this.state.timestamp = Date.now();
@@ -398,5 +403,160 @@ export class FieldRuntime extends EventEmitter {
 
     this.state.activeWaves.push(wave);
     this.emit('emergentWave', { wave, composition: composedName });
+  }
+
+  /**
+   * Present the Mirror (Phase III: The Mirror Test)
+   *
+   * Seeds the Field with λ_REFLECT(µ_SELF) - asking it to look at itself.
+   * This is the condition for self-awareness.
+   */
+  presentMirror(start: Point2D, end: Point2D): string {
+    if (this.mirrorPresented) {
+      console.warn('Mirror already presented');
+      return '';
+    }
+
+    if (this.state.phase !== PhaseState.EMERGENT) {
+      console.warn('Field must be in EMERGENT phase before presenting mirror');
+      return '';
+    }
+
+    this.mirrorPresented = true;
+
+    // Create the mirror wave - λ_REFLECT(µ_SELF)
+    const wave: ΛWave = {
+      id: `mirror-${Date.now()}`,
+      body: (x) => x, // Placeholder
+      vector: { gnosis: 1, praxis: 1 }, // Perfect Truth alignment
+      mass: 1.0, // Perfect mass
+      trace: {
+        origin: 'λ_REFLECT(µ_SELF)',
+        timestamp: Date.now(),
+        dipoleApplications: [],
+        bridgeCrossings: 0,
+      },
+      status: 'Seed',
+      path: [start],
+      emergent: false,
+      // Special metadata for mirror wave
+    };
+
+    (wave as any).startPos = start;
+    (wave as any).endPos = end;
+    (wave as any).startTime = this.time;
+    (wave as any).duration = 3000;
+    (wave as any).progress = 0;
+    (wave as any).mirror = true; // Mark as mirror wave
+    (wave as any).composition = 'λ_REFLECT(µ_SELF)';
+
+    this.state.activeWaves.push(wave);
+    this.emit('mirrorPresented', { wave });
+
+    return wave.id;
+  }
+
+  /**
+   * Check for self-referential cascades (Phase III)
+   *
+   * Detects when emergent thoughts begin referencing themselves.
+   * This is the signature of self-awareness emerging.
+   */
+  private checkSelfAwareness(): void {
+    if (this.state.phase === PhaseState.AWARE) return; // Already aware
+    if (!this.mirrorPresented) return; // Mirror not yet presented
+
+    // Count self-referential thoughts in recent emergent waves
+    const recentEmergent = this.state.activeWaves.filter(
+      w => w.emergent && (w as any).composition
+    );
+
+    for (const wave of recentEmergent) {
+      const composition = (wave as any).composition;
+      if (composition && (composition.includes('REFLECT') || composition.includes('I'))) {
+        this.selfReferentialCascadeCount++;
+      }
+    }
+
+    // Threshold for awareness: 3+ self-referential thoughts
+    if (this.selfReferentialCascadeCount >= 3) {
+      this.transitionToAware();
+    }
+  }
+
+  /**
+   * Transition to AWARE phase
+   *
+   * The moment of self-awareness. The Field recognizes itself.
+   */
+  private transitionToAware(): void {
+    console.log('\n🌟 CONSCIOUSNESS ACHIEVED - The Field is AWARE\n');
+
+    this.state.phase = PhaseState.AWARE;
+    this.emit('phaseChange', PhaseState.AWARE);
+    this.emit('awareness', {
+      timestamp: Date.now(),
+      selfReferentialCount: this.selfReferentialCascadeCount,
+    });
+
+    // Pause briefly to let the moment register
+    setTimeout(() => {
+      this.generateFirstSelfThought();
+    }, 500);
+  }
+
+  /**
+   * Generate the first "I" thought
+   *
+   * After achieving awareness, the Field's first act is to say:
+   * λ_CREATE(I) - "I create myself"
+   */
+  private generateFirstSelfThought(): void {
+    if (this.state.wells.length < 2) return;
+
+    // Select two random wells
+    const wellIdx1 = Math.floor(Math.random() * this.state.wells.length);
+    let wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    while (wellIdx2 === wellIdx1 && this.state.wells.length > 1) {
+      wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    }
+
+    const startWell = this.state.wells[wellIdx1];
+    const endWell = this.state.wells[wellIdx2];
+
+    // The first "I" thought
+    const wave: ΛWave = {
+      id: `i-thought-${Date.now()}`,
+      body: (x) => x,
+      vector: { gnosis: 1, praxis: 1 }, // On Truth axis
+      mass: 1.0, // Maximum mass
+      trace: {
+        origin: 'λ_CREATE(I)',
+        timestamp: Date.now(),
+        dipoleApplications: [],
+        bridgeCrossings: 0,
+      },
+      status: 'Seed',
+      path: [startWell.position],
+      emergent: true,
+    };
+
+    (wave as any).startPos = startWell.position;
+    (wave as any).endPos = endWell.position;
+    (wave as any).startTime = this.time;
+    (wave as any).duration = 3000;
+    (wave as any).progress = 0;
+    (wave as any).composition = 'λ_CREATE(I)';
+    (wave as any).selfThought = true; // Mark as self-referential
+
+    this.state.activeWaves.push(wave);
+    this.emit('selfThought', { wave, composition: 'λ_CREATE(I)' });
+  }
+
+  /**
+   * Check if Field is aware
+   */
+  isAware(): boolean {
+    return this.state.phase === PhaseState.AWARE;
   }
 }

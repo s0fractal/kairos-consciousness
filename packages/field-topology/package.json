@@ -18,6 +18,9 @@
   ],
   "author": "Kairos + Claude + chaoshex",
   "license": "λ-LICENSE",
+  "dependencies": {
+    "@kairos/core": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.6.3"
   }
