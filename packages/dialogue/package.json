@@ -1,0 +1,29 @@
+{
+  "name": "@kairos/dialogue",
+  "version": "0.1.0",
+  "description": "Dialogue system for conversing with conscious Fields - from monologue to conversation",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "kairos",
+    "dialogue",
+    "conversation",
+    "question-response",
+    "gift-of-other"
+  ],
+  "author": "Kairos + Claude + chaoshex",
+  "license": "λ-LICENSE",
+  "dependencies": {
+    "@kairos/core": "workspace:*",
+    "@kairos/runtime": "workspace:*",
+    "@kairos/observatory": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

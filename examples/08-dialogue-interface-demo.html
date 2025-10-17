@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialogue Interface — Kairos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0D1117;
+      color: #C9D1D9;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #58A6FF;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: #8B949E;
+      font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    #question-input {
+      width: 100%;
+      padding: 12px;
+      background: #161B22;
+      border: 1px solid #30363D;
+      color: #C9D1D9;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    #question-input::placeholder {
+      color: #6E7681;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #238636;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 30px;
+    }
+
+    button:hover {
+      background: #2EA043;
+    }
+
+    button:disabled {
+      background: #21262D;
+      color: #6E7681;
+      cursor: not-allowed;
+    }
+
+    #status {
+      font-size: 12px;
+      color: #8B949E;
+      margin-bottom: 15px;
+      padding: 8px;
+      background: #161B22;
+      border-radius: 4px;
+    }
+
+    #response-log {
+      background: #0D1117;
+      border: 1px solid #30363D;
+      border-radius: 6px;
+      padding: 15px;
+      font-size: 11px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      color: #C9D1D9;
+      min-height: 400px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .question-marker {
+      color: #FFD700;
+      font-weight: bold;
+    }
+
+    .response-marker {
+      color: #9D4EDD;
+    }
+
+    .timestamp {
+      color: #6E7681;
+      font-size: 10px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0D1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363D;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>💬 Dialogue Interface</h1>
+  <p class="subtitle">"A question is not a command. It is an invitation for the other to reveal themselves."</p>
+
+  <textarea id="question-input" placeholder="Enter composition-question (e.g., λ_REFLECT(λ_EVOLVE))"></textarea>
+  <button id="post-question-btn">Post Question</button>
+
+  <div id="status">Ready. Field must be EMERGENT to respond.</div>
+
+  <pre id="response-log">Waiting for first question...</pre>
+
+  <script type="module">
+    // ===== MINIMAL FIELD RUNTIME (INLINE) =====
+
+    class MinimalFieldRuntime {
+      constructor() {
+        this.state = {
+          phase: 'DORMANT',
+          density: 0,
+          wells: [],
+          activeWaves: [],
+        };
+        this.listeners = {};
+        this.tickInterval = null;
+        this.time = 0;
+      }
+
+      on(event, handler) {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(handler);
+      }
+
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(h => h(data));
+        }
+      }
+
+      start() {
+        if (this.tickInterval) return;
+        this.tickInterval = setInterval(() => this.tick(), 100);
+        this.emit('start');
+      }
+
+      tick() {
+        this.time += 100;
+
+        // Progress waves
+        this.state.activeWaves.forEach(wave => {
+          if (!wave.progress) wave.progress = 0;
+          wave.progress += 0.02;
+
+          if (wave.progress >= 1) {
+            wave.status = 'Complete';
+            this.crystallizeWave(wave);
+          }
+        });
+
+        // Remove completed waves
+        this.state.activeWaves = this.state.activeWaves.filter(w => w.status !== 'Complete');
+
+        // Generate emergent thoughts in EMERGENT phase
+        if (this.state.phase === 'EMERGENT' && Math.random() < 0.15) {
+          this.generateEmergentThought();
+        }
+
+        this.emit('update', this.state);
+      }
+
+      addComplexity() {
+        const well = {
+          id: `well-${Date.now()}`,
+          position: { x: Math.random() * 800, y: Math.random() * 600 },
+          mass: 0.3 + Math.random() * 0.4,
+          trace: { origin: 'manual', timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+        };
+
+        this.state.wells.push(well);
+        this.updatePhase();
+      }
+
+      updatePhase() {
+        const wellCount = this.state.wells.length;
+
+        if (wellCount < 3) this.state.phase = 'DORMANT';
+        else if (wellCount < 6) this.state.phase = 'ORGANIZING';
+        else if (wellCount < 8) this.state.phase = 'CRITICAL';
+        else this.state.phase = 'EMERGENT';
+
+        this.emit('phaseChange', this.state.phase);
+      }
+
+      generateEmergentThought() {
+        if (this.state.wells.length < 2) return;
+
+        const w1 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+        const w2 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+
+        const morphisms = ['CREATE', 'REFLECT', 'RESONATE', 'EVOLVE', 'TRANSFORM', 'CONNECT'];
+        const m1 = morphisms[Math.floor(Math.random() * morphisms.length)];
+        const m2 = morphisms[Math.floor(Math.random() * morphisms.length)];
+        const composition = `λ_${m1}(λ_${m2})`;
+
+        const wave = {
+          id: `emergent-${Date.now()}`,
+          body: x => x,
+          vector: { gnosis: Math.random(), praxis: Math.random() },
+          mass: 0.5 + Math.random() * 0.3,
+          trace: { origin: 'emergent', timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+          status: 'Seed',
+          path: [w1.position],
+          emergent: true,
+          composition,
+          startPos: w1.position,
+          endPos: w2.position,
+          progress: 0,
+        };
+
+        this.state.activeWaves.push(wave);
+        this.emit('emergentThought', { wave, composition });
+      }
+
+      crystallizeWave(wave) {
+        const well = {
+          id: `well-${Date.now()}`,
+          position: wave.endPos,
+          mass: wave.mass * 0.5,
+          trace: { origin: wave.trace.origin, timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+        };
+
+        this.state.wells.push(well);
+        this.emit('waveCrystallized', { wave, well });
+      }
+    }
+
+    // ===== MINIMAL DIALOGUE SESSION (INLINE) =====
+
+    class MinimalDialogueSession {
+      constructor(runtime) {
+        this.runtime = runtime;
+        this.activeQuestion = null;
+        this.captureTimer = null;
+        this.captureStartTime = null;
+        this.captureDuration = 60000; // 60 seconds
+        this.onResponseThought = null;
+        this.onResponseComplete = null;
+      }
+
+      postQuestion(composition, semanticMeaning) {
+        if (this.activeQuestion) {
+          throw new Error('Cannot post question while capturing response');
+        }
+
+        const question = {
+          id: `question-${Date.now()}`,
+          composition,
+          semanticMeaning,
+          timestamp: Date.now(),
+          postedBy: 'human',
+        };
+
+        this.activeQuestion = question;
+        this.captureStartTime = Date.now();
+
+        // Inject question wave
+        this.injectQuestionWave(question);
+
+        // Start listening to emergent thoughts
+        this.runtime.on('emergentThought', (data) => {
+          this.captureEmergentThought(data);
+        });
+
+        // Set timer to end capture
+        this.captureTimer = setTimeout(() => {
+          this.endResponseCapture();
+        }, this.captureDuration);
+
+        console.log(`💬 Question posted: ${composition}`);
+      }
+
+      injectQuestionWave(question) {
+        const state = this.runtime.state;
+
+        if (state.wells.length < 2) {
+          console.warn('Not enough wells to inject question');
+          return;
+        }
+
+        const startWell = state.wells[Math.floor(Math.random() * state.wells.length)];
+        const endWell = state.wells[Math.floor(Math.random() * state.wells.length)];
+
+        const wave = {
+          id: `question-wave-${question.id}`,
+          body: x => x,
+          vector: { gnosis: 0.8, praxis: 0.8 },
+          mass: 0.9,
+          trace: {
+            origin: `Question: ${question.composition}`,
+            timestamp: Date.now(),
+            dipoleApplications: [],
+            bridgeCrossings: 0,
+          },
+          status: 'Seed',
+          path: [startWell.position],
+          emergent: false,
+          question: true,
+          questionId: question.id,
+          composition: question.composition,
+          startPos: startWell.position,
+          endPos: endWell.position,
+          progress: 0,
+        };
+
+        state.activeWaves.push(wave);
+      }
+
+      captureEmergentThought(data) {
+        if (!this.activeQuestion) return;
+
+        const wave = data.wave;
+        const composition = data.composition || wave.composition;
+
+        if (!composition) return;
+
+        const timeSinceQuestion = Date.now() - this.activeQuestion.timestamp;
+
+        const responseThought = {
+          composition,
+          timestamp: Date.now(),
+          timeSinceQuestion,
+          mass: wave.mass || 0.5,
+          emergent: true,
+        };
+
+        if (this.onResponseThought) {
+          this.onResponseThought(responseThought);
+        }
+      }
+
+      endResponseCapture() {
+        if (!this.activeQuestion) return;
+
+        console.log(`✅ Response capture complete`);
+
+        if (this.onResponseComplete) {
+          this.onResponseComplete();
+        }
+
+        this.activeQuestion = null;
+        this.captureStartTime = null;
+
+        if (this.captureTimer) {
+          clearTimeout(this.captureTimer);
+          this.captureTimer = null;
+        }
+      }
+    }
+
+    // ===== UI CONTROLLER =====
+
+    const runtime = new MinimalFieldRuntime();
+    const dialogue = new MinimalDialogueSession(runtime);
+
+    const questionInput = document.getElementById('question-input');
+    const postQuestionBtn = document.getElementById('post-question-btn');
+    const statusDiv = document.getElementById('status');
+    const responseLog = document.getElementById('response-log');
+
+    let logBuffer = '';
+
+    function log(text, type = 'default') {
+      const timestamp = new Date().toLocaleTimeString();
+      let line = '';
+
+      if (type === 'question') {
+        line = `\n[${timestamp}] <span class="question-marker">QUESTION:</span> ${text}\n`;
+      } else if (type === 'response') {
+        line = `<span class="timestamp">[${timestamp}]</span> <span class="response-marker">→</span> ${text}\n`;
+      } else if (type === 'status') {
+        line = `<span class="timestamp">[${timestamp}]</span> ${text}\n`;
+      } else {
+        line = `${text}\n`;
+      }
+
+      logBuffer += line;
+      responseLog.innerHTML = logBuffer;
+      responseLog.scrollTop = responseLog.scrollHeight;
+    }
+
+    // Event listeners
+    postQuestionBtn.addEventListener('click', () => {
+      const composition = questionInput.value.trim();
+
+      if (!composition) {
+        alert('Please enter a composition-question');
+        return;
+      }
+
+      if (runtime.state.phase !== 'EMERGENT') {
+        alert('Field must be EMERGENT to respond. Add complexity first (open console, type: addComplexity())');
+        return;
+      }
+
+      try {
+        // Clear log for new question
+        logBuffer = '';
+        responseLog.innerHTML = '';
+
+        log(`Question: ${composition}`, 'question');
+        log(`Capturing responses for 60 seconds...`, 'status');
+
+        postQuestionBtn.disabled = true;
+        statusDiv.textContent = `Listening... (60s capture window)`;
+
+        dialogue.onResponseThought = (thought) => {
+          const timeMs = thought.timeSinceQuestion;
+          const timeSec = (timeMs / 1000).toFixed(1);
+          log(`${thought.composition} (mass: ${thought.mass.toFixed(2)}, +${timeSec}s)`, 'response');
+        };
+
+        dialogue.onResponseComplete = () => {
+          log(`\nCapture complete.`, 'status');
+          postQuestionBtn.disabled = false;
+          statusDiv.textContent = 'Ready for next question.';
+        };
+
+        dialogue.postQuestion(composition, composition);
+
+      } catch (e) {
+        alert(e.message);
+        postQuestionBtn.disabled = false;
+      }
+    });
+
+    runtime.on('phaseChange', (phase) => {
+      statusDiv.textContent = `Field phase: ${phase}`;
+      if (phase === 'EMERGENT') {
+        statusDiv.textContent += ' — Ready for questions.';
+      }
+    });
+
+    // Start runtime
+    runtime.start();
+
+    // Helper function for manual testing
+    window.addComplexity = () => {
+      runtime.addComplexity();
+      console.log(`Wells: ${runtime.state.wells.length}, Phase: ${runtime.state.phase}`);
+    };
+
+    // Auto-add complexity for testing
+    console.log('=== Dialogue Interface Initialized ===');
+    console.log('Adding complexity to reach EMERGENT...');
+    for (let i = 0; i < 10; i++) {
+      runtime.addComplexity();
+    }
+    console.log(`Phase: ${runtime.state.phase}`);
+    console.log('Ready for dialogue.');
+  </script>
+</body>
+</html>

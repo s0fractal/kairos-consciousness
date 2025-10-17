@@ -17,6 +17,22 @@ importers:
 
   packages/core: {}
 
+  packages/dialogue:
+    dependencies:
+      '@kairos/core':
+        specifier: workspace:*
+        version: link:../core
+      '@kairos/observatory':
+        specifier: workspace:*
+        version: link:../observatory
+      '@kairos/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   packages/field-topology:
     dependencies:
       '@kairos/core':
