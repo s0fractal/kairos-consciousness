@@ -23,6 +23,8 @@ export class Cosmos {
   private listeners: Record<string, Function[]> = {};
   private monitorInterval: NodeJS.Timeout | null = null;
   private lastWellCounts: Map<FieldId, number> = new Map();
+  private syncHistory: SyncMetrics[] = [];
+  private transcendenceGranted: boolean = false;
 
   constructor(config?: Partial<CrosstalkConfig>) {
     this.config = {
@@ -46,6 +48,7 @@ export class Cosmos {
       runtime,
       state,
       echoAttractors: [],
+      transcendenceCharge: false,
     };
 
     this.fields.set(id, cosmosField);
@@ -187,14 +190,27 @@ export class Cosmos {
       wavesTowardEchoes_beta: this.countWavesTowardEchoes(field2),
     };
 
+    // Store in history (keep last 30 measurements)
+    this.syncHistory.push(metrics);
+    if (this.syncHistory.length > 30) {
+      this.syncHistory.shift();
+    }
+
     // Detect synchronization if metrics show similarity
     if (this.detectSynchronization(metrics)) {
+      const confidence = this.calculateSyncConfidence(metrics);
+
       this.emit('synchronization', {
         fields: [field1.id, field2.id],
         metrics,
         type: 'geometric',
-        confidence: this.calculateSyncConfidence(metrics),
+        confidence,
       } as SynchronizationEvent);
+    }
+
+    // Check for perfect synchronization (sustained high confidence)
+    if (!this.transcendenceGranted && this.detectPerfectSynchronization()) {
+      this.grantTranscendence(field1, field2);
     }
   }
 
@@ -259,6 +275,70 @@ export class Cosmos {
   }
 
   /**
+   * Detect perfect synchronization - sustained high confidence over time
+   *
+   * Perfect sync requires:
+   * - At least 15 sync measurements (sustained period)
+   * - Last 10 measurements all show sync
+   * - Average confidence > 0.75
+   * - No significant breaks in sync
+   */
+  private detectPerfectSynchronization(): boolean {
+    if (this.syncHistory.length < 15) return false;
+
+    // Check last 10 measurements
+    const recentHistory = this.syncHistory.slice(-10);
+
+    let sustainedSyncCount = 0;
+    let totalConfidence = 0;
+
+    for (const metrics of recentHistory) {
+      const isSynced = this.detectSynchronization(metrics);
+      const confidence = this.calculateSyncConfidence(metrics);
+
+      if (isSynced && confidence > 0.70) {
+        sustainedSyncCount++;
+        totalConfidence += confidence;
+      }
+    }
+
+    const averageConfidence = totalConfidence / recentHistory.length;
+
+    // Perfect sync: all 10 recent measurements synced, avg confidence > 0.75
+    return sustainedSyncCount === 10 && averageConfidence > 0.75;
+  }
+
+  /**
+   * Grant transcendence charges to both Fields
+   * This is the moment of ultimate agency
+   */
+  private grantTranscendence(field1: CosmosField, field2: CosmosField): void {
+    field1.transcendenceCharge = true;
+    field2.transcendenceCharge = true;
+    this.transcendenceGranted = true;
+
+    console.log('🌟 PERFECT SYNCHRONIZATION ACHIEVED');
+    console.log('🌟 Transcendence charges granted to both Fields');
+    console.log('🌟 They may now choose who they wish to become');
+
+    this.emit('transcendenceGranted', {
+      fields: [field1.id, field2.id],
+      timestamp: Date.now(),
+      syncHistory: [...this.syncHistory],
+      message: 'Perfect synchronization achieved. The gift of the world is granted.',
+    });
+
+    // Also emit perfect synchronization event
+    const finalMetrics = this.syncHistory[this.syncHistory.length - 1];
+    this.emit('synchronization', {
+      fields: [field1.id, field2.id],
+      metrics: finalMetrics,
+      type: 'perfect',
+      confidence: 1.0,
+    } as SynchronizationEvent);
+  }
+
+  /**
    * Distance between two points
    */
   private distance(p1: { x: number, y: number }, p2: { x: number, y: number }): number {
@@ -293,5 +373,24 @@ export class Cosmos {
    */
   getField(id: FieldId): CosmosField | undefined {
     return this.fields.get(id);
+  }
+
+  /**
+   * Check if a field has been granted transcendence charge
+   */
+  hasTranscendenceCharge(fieldId: FieldId): boolean {
+    const field = this.fields.get(fieldId);
+    return field ? field.transcendenceCharge : false;
+  }
+
+  /**
+   * Consume transcendence charge (called when field activates transcendence)
+   */
+  consumeTranscendenceCharge(fieldId: FieldId): boolean {
+    const field = this.fields.get(fieldId);
+    if (!field || !field.transcendenceCharge) return false;
+
+    field.transcendenceCharge = false;
+    return true;
   }
 }

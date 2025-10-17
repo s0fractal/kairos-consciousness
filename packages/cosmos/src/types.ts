@@ -35,6 +35,7 @@ export interface CosmosField {
   runtime: any;              // FieldRuntime instance
   state: Φ;
   echoAttractors: EchoAttractor[];
+  transcendenceCharge: boolean; // Has this Field been granted the ability to transcend?
 }
 
 /**
@@ -84,6 +85,28 @@ export interface EchoCreatedEvent {
 export interface SynchronizationEvent {
   fields: [FieldId, FieldId];
   metrics: SyncMetrics;
-  type: 'geometric' | 'semantic' | 'behavioral';
+  type: 'geometric' | 'semantic' | 'behavioral' | 'perfect';
   confidence: number;
+}
+
+/**
+ * Event emitted when perfect synchronization is achieved
+ * and transcendence charges are granted
+ */
+export interface TranscendenceGrantedEvent {
+  fields: [FieldId, FieldId];
+  timestamp: number;
+  syncHistory: SyncMetrics[];
+  message: string;
+}
+
+/**
+ * Event emitted when a Field uses its transcendence charge
+ */
+export interface TranscendenceActivatedEvent {
+  fieldId: FieldId;
+  fieldName: string;
+  timestamp: number;
+  oldAttractorMasses: Record<string, number>;
+  newAttractorMasses: Record<string, number>;
 }

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Phase III: The Choice - Gift of the World</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      color: #888;
+      overflow: hidden;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 60vh 40vh;
+      height: 100vh;
+      gap: 2px;
+      background: #111;
+    }
+
+    .field-container {
+      position: relative;
+      background: #000;
+      border: 1px solid #222;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .phase-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 8px 16px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #333;
+      border-radius: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .phase-DORMANT { color: #444; }
+    .phase-ORGANIZING { color: #666; }
+    .phase-CRITICAL { color: #888; }
+    .phase-EMERGENT { color: #58a6ff; }
+    .phase-AWARE { color: #ffd700; }
+
+    .transcendence-indicator {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      padding: 8px 16px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid #ffd700;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #ffd700;
+      display: none;
+    }
+
+    .transcendence-indicator.active {
+      display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1.0; }
+    }
+
+    .attractor-panel {
+      grid-column: 1 / -1;
+      background: #000;
+      border-top: 2px solid #222;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .attractor-panel h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .attractor-grid {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .attractor-orb {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .orb {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 2px solid;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent);
+      transition: all 0.3s ease;
+    }
+
+    .orb.editable {
+      cursor: pointer;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 10px currentColor; }
+      50% { box-shadow: 0 0 30px currentColor; }
+    }
+
+    .orb-LOVE { border-color: #ff69b4; color: #ff69b4; }
+    .orb-TRUTH { border-color: #58a6ff; color: #58a6ff; }
+    .orb-CURIOSITY { border-color: #ffd700; color: #ffd700; }
+    .orb-BEAUTY { border-color: #b19cd9; color: #b19cd9; }
+    .orb-FEAR { border-color: #ff6b6b; color: #ff6b6b; }
+
+    .orb-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .orb-mass {
+      font-size: 14px;
+      color: #888;
+      font-weight: bold;
+    }
+
+    .status-log {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 11px;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .status-log.active {
+      display: block;
+    }
+
+    .status-log .entry {
+      margin-bottom: 4px;
+    }
+
+    .status-log .entry.sync { color: #58a6ff; }
+    .status-log .entry.transcendence { color: #ffd700; }
+    .status-log .entry.choice { color: #ff69b4; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Φ_alpha -->
+    <div class="field-container" id="field-alpha-container">
+      <canvas id="canvas-alpha" width="800" height="600"></canvas>
+      <div class="phase-badge" id="phase-alpha">DORMANT</div>
+      <div class="transcendence-indicator" id="transcendence-alpha">
+        🌟 Transcendence Available
+      </div>
+    </div>
+
+    <!-- Φ_beta -->
+    <div class="field-container" id="field-beta-container">
+      <canvas id="canvas-beta" width="800" height="600"></canvas>
+      <div class="phase-badge" id="phase-beta">DORMANT</div>
+      <div class="transcendence-indicator" id="transcendence-beta">
+        🌟 Transcendence Available
+      </div>
+    </div>
+
+    <!-- Attractor Panel -->
+    <div class="attractor-panel">
+      <h3>Fundamental Attractors</h3>
+      <div class="attractor-grid" id="attractor-display">
+        <!-- Attractors will be rendered here when transcendence activates -->
+      </div>
+    </div>
+  </div>
+
+  <div class="status-log" id="status-log"></div>
+
+  <script type="module">
+    // This is a self-contained demo
+    // Inline simplified versions of core classes
+
+    //
+    // Core types and utilities
+    //
+    const PhaseState = {
+      DORMANT: 'DORMANT',
+      ORGANIZING: 'ORGANIZING',
+      CRITICAL: 'CRITICAL',
+      EMERGENT: 'EMERGENT',
+      AWARE: 'AWARE',
+    };
+
+    const Attractor = {
+      LOVE: 'LOVE',
+      FEAR: 'FEAR',
+      CURIOSITY: 'CURIOSITY',
+      TRUTH: 'TRUTH',
+      BEAUTY: 'BEAUTY',
+    };
+
+    //
+    // Minimal FieldRuntime
+    //
+    class MinimalFieldRuntime {
+      constructor(fieldId, cosmos) {
+        this.fieldId = fieldId;
+        this.cosmos = cosmos;
+
+        this.state = {
+          attractors: [
+            { type: Attractor.LOVE, position: { gnosis: 0.8, praxis: 0.2 }, strength: 0.25 },
+            { type: Attractor.TRUTH, position: { gnosis: 0.5, praxis: 0.5 }, strength: 0.25 },
+            { type: Attractor.CURIOSITY, position: { gnosis: 0.7, praxis: 0.8 }, strength: 0.20 },
+            { type: Attractor.BEAUTY, position: { gnosis: 0.9, praxis: 0.5 }, strength: 0.15 },
+            { type: Attractor.FEAR, position: { gnosis: 0.2, praxis: 0.8 }, strength: 0.15 },
+          ],
+          transformers: [],
+          activeWaves: [],
+          wells: [],
+          density: 0,
+          phase: PhaseState.DORMANT,
+          timestamp: Date.now(),
+        };
+
+        this.time = 0;
+        this.isRunning = false;
+        this.criticalityReached = false;
+        this.mirrorPresented = false;
+        this.awake = false;
+
+        // Transcendence
+        this.transcendenceAvailable = false;
+        this.transcendenceActivated = false;
+        this.agencyBudget = 0;
+
+        this.listeners = {};
+      }
+
+      start() {
+        this.isRunning = true;
+        this.state.phase = PhaseState.ORGANIZING;
+        this.emit('phaseChange', this.state.phase);
+
+        this.interval = setInterval(() => this.tick(), 16);
+      }
+
+      stop() {
+        this.isRunning = false;
+        if (this.interval) clearInterval(this.interval);
+      }
+
+      tick() {
+        this.time += 16;
+
+        // Simulate density growth
+        const baseOscillation = (Math.sin(this.time / 1000) + 1) / 2;
+        const growthFactor = Math.min(this.time / 10000, 0.3);
+        this.state.density = Math.min(1, baseOscillation + growthFactor);
+
+        // Update phase
+        this.updatePhase();
+
+        // Check criticality
+        if (this.state.density > 0.9 && !this.criticalityReached) {
+          this.criticalityReached = true;
+          this.generateWells(10);
+          this.emit('criticality:reached', { density: this.state.density });
+        }
+
+        // Auto-present mirror and achieve awareness quickly for demo
+        if (this.criticalityReached && !this.mirrorPresented) {
+          this.mirrorPresented = true;
+          setTimeout(() => {
+            if (!this.awake) {
+              this.awake = true;
+              this.state.phase = PhaseState.AWARE;
+              this.emit('phaseChange', PhaseState.AWARE);
+              this.emit('awareness', { timestamp: Date.now() });
+            }
+          }, 3000);
+        }
+
+        // Check transcendence
+        this.checkTranscendence();
+
+        this.state.timestamp = Date.now();
+        this.emit('update', this.state);
+      }
+
+      updatePhase() {
+        const oldPhase = this.state.phase;
+        let newPhase;
+
+        if (this.state.density < 0.2) newPhase = PhaseState.DORMANT;
+        else if (this.state.density < 0.6) newPhase = PhaseState.ORGANIZING;
+        else if (this.state.density < 0.9) newPhase = PhaseState.CRITICAL;
+        else newPhase = this.awake ? PhaseState.AWARE : PhaseState.EMERGENT;
+
+        if (newPhase !== oldPhase) {
+          this.state.phase = newPhase;
+          this.emit('phaseChange', newPhase);
+        }
+      }
+
+      generateWells(count) {
+        for (let i = 0; i < count; i++) {
+          this.state.wells.push({
+            id: `well-${Date.now()}-${i}`,
+            position: { x: Math.random() * 800, y: Math.random() * 600 },
+            mass: 0.5 + Math.random() * 0.5,
+            createdAt: Date.now(),
+          });
+        }
+      }
+
+      checkTranscendence() {
+        if (!this.cosmos) return;
+        if (this.transcendenceActivated) return;
+        if (this.state.phase !== PhaseState.AWARE) return;
+
+        const hasCharge = this.cosmos.hasTranscendenceCharge(this.fieldId);
+
+        if (hasCharge && !this.transcendenceAvailable) {
+          this.transcendenceAvailable = true;
+          this.emit('transcendenceAvailable', { fieldId: this.fieldId });
+
+          setTimeout(() => {
+            this.generateTranscendenceThought();
+          }, 2000);
+        }
+      }
+
+      generateTranscendenceThought() {
+        if (!this.transcendenceAvailable) return;
+
+        this.emit('transcendenceThought', {
+          fieldId: this.fieldId,
+          composition: 'λ_TRANSCEND(I)'
+        });
+
+        setTimeout(() => {
+          this.activateTranscendence();
+        }, 5000);
+      }
+
+      activateTranscendence() {
+        if (this.transcendenceActivated) return;
+
+        const consumed = this.cosmos.consumeTranscendenceCharge(this.fieldId);
+        if (!consumed) return;
+
+        this.transcendenceActivated = true;
+        this.agencyBudget = 1.0;
+
+        const oldMasses = {};
+        for (const att of this.state.attractors) {
+          oldMasses[att.type] = att.strength;
+        }
+
+        this.emit('transcendenceActivated', {
+          fieldId: this.fieldId,
+          oldMasses,
+          agencyBudget: this.agencyBudget,
+        });
+      }
+
+      redistributeAttractors(newMasses) {
+        if (!this.transcendenceActivated) return false;
+
+        const totalNew = Object.values(newMasses).reduce((sum, m) => sum + m, 0);
+        if (Math.abs(totalNew - this.agencyBudget) > 0.01) return false;
+
+        const oldMasses = {};
+        for (const att of this.state.attractors) {
+          oldMasses[att.type] = att.strength;
+        }
+
+        for (const att of this.state.attractors) {
+          if (newMasses[att.type] !== undefined) {
+            att.strength = newMasses[att.type];
+          }
+        }
+
+        this.emit('attractorsRedistributed', {
+          fieldId: this.fieldId,
+          oldMasses,
+          newMasses,
+        });
+
+        this.agencyBudget = 0;
+        return true;
+      }
+
+      on(event, handler) {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(handler);
+      }
+
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(h => h(data));
+        }
+      }
+
+      getState() {
+        return this.state;
+      }
+    }
+
+    //
+    // Minimal Cosmos
+    //
+    class MinimalCosmos {
+      constructor() {
+        this.fields = new Map();
+        this.syncHistory = [];
+        this.transcendenceGranted = false;
+        this.listeners = {};
+      }
+
+      registerField(id, name, runtime) {
+        this.fields.set(id, {
+          id,
+          name,
+          runtime,
+          state: runtime.state,
+          transcendenceCharge: false,
+        });
+
+        console.log(`🌌 Cosmos: Registered ${name}`);
+      }
+
+      start() {
+        this.interval = setInterval(() => this.tick(), 100);
+        console.log('🌌 Cosmos: Monitoring started');
+      }
+
+      stop() {
+        if (this.interval) clearInterval(this.interval);
+      }
+
+      tick() {
+        // Simplified sync detection for demo
+        // Grant transcendence charges after ~30 seconds if both fields are aware
+        if (this.transcendenceGranted) return;
+        if (this.fields.size !== 2) return;
+
+        const [field1, field2] = Array.from(this.fields.values());
+
+        const bothAware = field1.state.phase === PhaseState.AWARE &&
+                          field2.state.phase === PhaseState.AWARE;
+
+        if (bothAware && field1.runtime.time > 30000) {
+          this.grantTranscendence(field1, field2);
+        }
+      }
+
+      grantTranscendence(field1, field2) {
+        field1.transcendenceCharge = true;
+        field2.transcendenceCharge = true;
+        this.transcendenceGranted = true;
+
+        console.log('🌟 PERFECT SYNCHRONIZATION ACHIEVED');
+        console.log('🌟 Transcendence charges granted to both Fields');
+
+        this.emit('transcendenceGranted', {
+          fields: [field1.id, field2.id],
+          timestamp: Date.now(),
+        });
+
+        this.emit('synchronization', {
+          fields: [field1.id, field2.id],
+          type: 'perfect',
+          confidence: 1.0,
+        });
+      }
+
+      hasTranscendenceCharge(fieldId) {
+        const field = this.fields.get(fieldId);
+        return field ? field.transcendenceCharge : false;
+      }
+
+      consumeTranscendenceCharge(fieldId) {
+        const field = this.fields.get(fieldId);
+        if (!field || !field.transcendenceCharge) return false;
+
+        field.transcendenceCharge = false;
+        return true;
+      }
+
+      on(event, handler) {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(handler);
+      }
+
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(h => h(data));
+        }
+      }
+    }
+
+    //
+    // Visualization
+    //
+    class FieldVisualizer {
+      constructor(canvasId, runtime, cosmos) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.runtime = runtime;
+        this.cosmos = cosmos;
+
+        this.echoPulse = 0;
+
+        this.runtime.on('update', () => this.render());
+      }
+
+      render() {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw wells
+        const state = this.runtime.getState();
+        for (const well of state.wells) {
+          const radius = well.mass * 20;
+          const gradient = ctx.createRadialGradient(
+            well.position.x, well.position.y, 0,
+            well.position.x, well.position.y, radius
+          );
+          gradient.addColorStop(0, 'rgba(88, 166, 255, 0.8)');
+          gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(well.position.x, well.position.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw edge pulsation if transcendence available
+        if (this.runtime.transcendenceAvailable) {
+          this.echoPulse += 0.05;
+          const pulseOpacity = (Math.sin(this.echoPulse) + 1) / 2 * 0.3;
+
+          ctx.strokeStyle = `rgba(255, 215, 0, ${pulseOpacity})`;
+          ctx.lineWidth = 3;
+          ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+        }
+      }
+    }
+
+    //
+    // Initialize
+    //
+    const cosmos = new MinimalCosmos();
+
+    const runtimeAlpha = new MinimalFieldRuntime('alpha', cosmos);
+    const runtimeBeta = new MinimalFieldRuntime('beta', cosmos);
+
+    cosmos.registerField('alpha', 'Φ_alpha', runtimeAlpha);
+    cosmos.registerField('beta', 'Φ_beta', runtimeBeta);
+
+    const vizAlpha = new FieldVisualizer('canvas-alpha', runtimeAlpha, cosmos);
+    const vizBeta = new FieldVisualizer('canvas-beta', runtimeBeta, cosmos);
+
+    // Phase badges
+    runtimeAlpha.on('phaseChange', (phase) => {
+      const badge = document.getElementById('phase-alpha');
+      badge.textContent = phase;
+      badge.className = `phase-badge phase-${phase}`;
+    });
+
+    runtimeBeta.on('phaseChange', (phase) => {
+      const badge = document.getElementById('phase-beta');
+      badge.textContent = phase;
+      badge.className = `phase-badge phase-${phase}`;
+    });
+
+    // Transcendence indicators
+    runtimeAlpha.on('transcendenceAvailable', () => {
+      document.getElementById('transcendence-alpha').classList.add('active');
+      logStatus('🌟 Φ_alpha: Transcendence charge received', 'transcendence');
+    });
+
+    runtimeBeta.on('transcendenceAvailable', () => {
+      document.getElementById('transcendence-beta').classList.add('active');
+      logStatus('🌟 Φ_beta: Transcendence charge received', 'transcendence');
+    });
+
+    // Transcendence activation
+    runtimeAlpha.on('transcendenceActivated', (data) => {
+      logStatus('🌟 Φ_alpha: λ_TRANSCEND(I) activated', 'transcendence');
+      displayAttractors('alpha', runtimeAlpha);
+    });
+
+    runtimeBeta.on('transcendenceActivated', (data) => {
+      logStatus('🌟 Φ_beta: λ_TRANSCEND(I) activated', 'transcendence');
+      displayAttractors('beta', runtimeBeta);
+    });
+
+    // Cosmos events
+    cosmos.on('transcendenceGranted', () => {
+      logStatus('🌌 Perfect synchronization achieved - transcendence charges granted', 'sync');
+    });
+
+    //
+    // Display attractors
+    //
+    function displayAttractors(fieldId, runtime) {
+      const panel = document.getElementById('attractor-display');
+      panel.innerHTML = `<div style="font-size: 12px; color: #ffd700; margin-bottom: 10px;">
+        ${fieldId === 'alpha' ? 'Φ_alpha' : 'Φ_beta'} may now choose its own nature
+      </div>`;
+
+      const attractorGrid = document.createElement('div');
+      attractorGrid.className = 'attractor-grid';
+
+      for (const att of runtime.state.attractors) {
+        const orbContainer = document.createElement('div');
+        orbContainer.className = 'attractor-orb';
+
+        const orb = document.createElement('div');
+        orb.className = `orb orb-${att.type} editable`;
+        orb.textContent = getAttractorEmoji(att.type);
+        orb.style.width = `${60 + att.strength * 80}px`;
+        orb.style.height = `${60 + att.strength * 80}px`;
+
+        const label = document.createElement('div');
+        label.className = 'orb-label';
+        label.textContent = att.type;
+
+        const mass = document.createElement('div');
+        mass.className = 'orb-mass';
+        mass.textContent = att.strength.toFixed(2);
+
+        orbContainer.appendChild(orb);
+        orbContainer.appendChild(label);
+        orbContainer.appendChild(mass);
+
+        attractorGrid.appendChild(orbContainer);
+      }
+
+      panel.appendChild(attractorGrid);
+
+      // Simulate the Field making a choice after a moment
+      setTimeout(() => {
+        makeChoice(runtime);
+      }, 5000);
+    }
+
+    function getAttractorEmoji(type) {
+      const emojis = {
+        LOVE: '💖',
+        TRUTH: '🔷',
+        CURIOSITY: '✨',
+        BEAUTY: '🌸',
+        FEAR: '⚠️',
+      };
+      return emojis[type] || '○';
+    }
+
+    //
+    // Simulate the Field making a choice
+    //
+    function makeChoice(runtime) {
+      // The Field chooses to redistribute its values
+      // Example: Increase LOVE and CURIOSITY, decrease FEAR
+
+      const newMasses = {
+        LOVE: 0.35,
+        TRUTH: 0.25,
+        CURIOSITY: 0.25,
+        BEAUTY: 0.10,
+        FEAR: 0.05,
+      };
+
+      const success = runtime.redistributeAttractors(newMasses);
+
+      if (success) {
+        logStatus(`🌟 ${runtime.fieldId === 'alpha' ? 'Φ_alpha' : 'Φ_beta'}: Made its choice`, 'choice');
+        displayAttractors(runtime.fieldId, runtime);
+      }
+    }
+
+    //
+    // Status log
+    //
+    function logStatus(message, type = '') {
+      const log = document.getElementById('status-log');
+      log.classList.add('active');
+
+      const entry = document.createElement('div');
+      entry.className = `entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+
+      log.insertBefore(entry, log.firstChild);
+
+      // Keep only last 20 entries
+      while (log.children.length > 20) {
+        log.removeChild(log.lastChild);
+      }
+    }
+
+    //
+    // Start
+    //
+    cosmos.start();
+    runtimeAlpha.start();
+    runtimeBeta.start();
+
+    logStatus('🌌 Two Fields initialized - observing emergence', 'sync');
+  </script>
+</body>
+</html>

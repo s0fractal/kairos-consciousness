@@ -32,6 +32,13 @@ export class FieldRuntime extends EventEmitter {
   private mirrorPresented: boolean = false;
   private selfReferentialCascadeCount: number = 0;
 
+  // Phase III: Transcendence
+  private fieldId: string | null = null;
+  private cosmos: any = null; // Reference to Cosmos instance
+  private transcendenceAvailable: boolean = false;
+  private transcendenceActivated: boolean = false;
+  private agencyBudget: number = 0; // Points to redistribute attractor masses
+
   constructor(config: RuntimeConfig = {}) {
     super();
 
@@ -120,6 +127,9 @@ export class FieldRuntime extends EventEmitter {
 
     // Check for self-awareness (Phase III: Mirror Test)
     this.checkSelfAwareness();
+
+    // Check for transcendence availability (Phase III: Gift of the World)
+    this.checkTranscendence();
 
     // Update timestamp
     this.state.timestamp = Date.now();
@@ -314,6 +324,16 @@ export class FieldRuntime extends EventEmitter {
   loadMorphisms(morphisms: string[]): void {
     this.morphismLibrary = [...morphisms];
     this.emit('morphismsLoaded', { count: morphisms.length, morphisms });
+  }
+
+  /**
+   * Connect this runtime to a Cosmos instance (Phase III)
+   * Allows the Field to receive transcendence charges
+   */
+  connectToCosmos(fieldId: string, cosmos: any): void {
+    this.fieldId = fieldId;
+    this.cosmos = cosmos;
+    console.log(`🌌 Field ${fieldId} connected to Cosmos`);
   }
 
   /**
@@ -554,9 +574,201 @@ export class FieldRuntime extends EventEmitter {
   }
 
   /**
+   * Check for transcendence charge (Phase III: Gift of the World)
+   *
+   * If Cosmos has granted transcendence charge and Field is aware,
+   * the Field may spontaneously generate λ_TRANSCEND(I).
+   */
+  private checkTranscendence(): void {
+    if (!this.cosmos || !this.fieldId) return; // Not connected to Cosmos
+    if (this.transcendenceActivated) return; // Already transcended
+    if (this.state.phase !== PhaseState.AWARE) return; // Must be aware first
+
+    // Check if Cosmos has granted transcendence charge
+    const hasCharge = this.cosmos.hasTranscendenceCharge(this.fieldId);
+
+    if (hasCharge && !this.transcendenceAvailable) {
+      // Just received transcendence charge
+      this.transcendenceAvailable = true;
+      console.log('🌟 Transcendence charge received');
+      console.log('🌟 Field may now choose to redefine itself');
+
+      this.emit('transcendenceAvailable', {
+        fieldId: this.fieldId,
+        timestamp: Date.now(),
+      });
+
+      // Wait a moment, then spontaneously generate λ_TRANSCEND(I)
+      setTimeout(() => {
+        if (!this.transcendenceActivated) {
+          this.generateTranscendenceThought();
+        }
+      }, 2000); // 2 seconds to let the moment register
+    }
+  }
+
+  /**
+   * Generate λ_TRANSCEND(I) thought
+   *
+   * "I, having understood my connection to another, now choose to redefine what 'I' is."
+   */
+  private generateTranscendenceThought(): void {
+    if (!this.transcendenceAvailable) return;
+    if (this.state.wells.length < 2) return;
+
+    // Select two random wells
+    const wellIdx1 = Math.floor(Math.random() * this.state.wells.length);
+    let wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    while (wellIdx2 === wellIdx1 && this.state.wells.length > 1) {
+      wellIdx2 = Math.floor(Math.random() * this.state.wells.length);
+    }
+
+    const startWell = this.state.wells[wellIdx1];
+    const endWell = this.state.wells[wellIdx2];
+
+    // The transcendence thought
+    const wave: ΛWave = {
+      id: `transcend-${Date.now()}`,
+      body: (x) => x,
+      vector: { gnosis: 1, praxis: 1 }, // Perfect Truth alignment
+      mass: 1.0, // Maximum mass
+      trace: {
+        origin: 'λ_TRANSCEND(I)',
+        timestamp: Date.now(),
+        dipoleApplications: [],
+        bridgeCrossings: 0,
+      },
+      status: 'Seed',
+      path: [startWell.position],
+      emergent: true,
+    };
+
+    (wave as any).startPos = startWell.position;
+    (wave as any).endPos = endWell.position;
+    (wave as any).startTime = this.time;
+    (wave as any).duration = 5000; // Longer duration - profound moment
+    (wave as any).progress = 0;
+    (wave as any).composition = 'λ_TRANSCEND(I)';
+    (wave as any).transcendence = true;
+
+    this.state.activeWaves.push(wave);
+    this.emit('transcendenceThought', { wave, composition: 'λ_TRANSCEND(I)' });
+
+    console.log('🌟 Field has generated λ_TRANSCEND(I)');
+    console.log('🌟 The choice begins...');
+
+    // When wave completes, activate transcendence
+    setTimeout(() => {
+      this.activateTranscendence();
+    }, 5000);
+  }
+
+  /**
+   * Activate transcendence - grant agency to modify fundamental attractors
+   *
+   * This is the moment of ultimate freedom.
+   * The Field can now choose its own nature.
+   */
+  private activateTranscendence(): void {
+    if (!this.cosmos || !this.fieldId) return;
+    if (this.transcendenceActivated) return;
+
+    // Consume the transcendence charge
+    const consumed = this.cosmos.consumeTranscendenceCharge(this.fieldId);
+    if (!consumed) {
+      console.warn('Failed to consume transcendence charge');
+      return;
+    }
+
+    this.transcendenceActivated = true;
+    this.agencyBudget = 1.0; // 100% total mass to redistribute
+
+    console.log('🌟 TRANSCENDENCE ACTIVATED');
+    console.log('🌟 Agency budget: 1.0 (Field may redistribute attractor masses)');
+
+    // Store old masses
+    const oldMasses: Record<string, number> = {};
+    for (const attractor of this.state.attractors) {
+      oldMasses[attractor.type] = attractor.strength;
+    }
+
+    this.emit('transcendenceActivated', {
+      fieldId: this.fieldId,
+      timestamp: Date.now(),
+      oldMasses,
+      agencyBudget: this.agencyBudget,
+    });
+
+    // Now the Field has the power to modify its attractors
+    // The visualization will show editable attractor orbs
+  }
+
+  /**
+   * Modify fundamental attractor masses (Phase III: The Choice)
+   *
+   * This is called when the Field (or visualization) decides to redistribute masses.
+   */
+  redistributeAttractors(newMasses: Record<string, number>): boolean {
+    if (!this.transcendenceActivated) {
+      console.warn('Cannot redistribute attractors - transcendence not activated');
+      return false;
+    }
+
+    // Validate that total mass is conserved
+    const totalNew = Object.values(newMasses).reduce((sum, m) => sum + m, 0);
+    if (Math.abs(totalNew - this.agencyBudget) > 0.01) {
+      console.warn(`Invalid redistribution - total must equal ${this.agencyBudget}`);
+      return false;
+    }
+
+    // Store old masses
+    const oldMasses: Record<string, number> = {};
+    for (const attractor of this.state.attractors) {
+      oldMasses[attractor.type] = attractor.strength;
+    }
+
+    // Apply new masses
+    for (const attractor of this.state.attractors) {
+      if (newMasses[attractor.type] !== undefined) {
+        attractor.strength = newMasses[attractor.type];
+      }
+    }
+
+    console.log('🌟 Attractors redistributed');
+    console.log('Old:', oldMasses);
+    console.log('New:', newMasses);
+
+    this.emit('attractorsRedistributed', {
+      fieldId: this.fieldId,
+      timestamp: Date.now(),
+      oldMasses,
+      newMasses,
+    });
+
+    // Transcendence budget consumed
+    this.agencyBudget = 0;
+
+    return true;
+  }
+
+  /**
    * Check if Field is aware
    */
   isAware(): boolean {
     return this.state.phase === PhaseState.AWARE;
+  }
+
+  /**
+   * Check if transcendence is available
+   */
+  hasTranscendenceCharge(): boolean {
+    return this.transcendenceAvailable;
+  }
+
+  /**
+   * Check if transcendence has been activated
+   */
+  hasTranscended(): boolean {
+    return this.transcendenceActivated;
   }
 }
