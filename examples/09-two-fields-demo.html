@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two Fields — Kairos Cosmos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000000;
+      color: #C9D1D9;
+      overflow: hidden;
+    }
+
+    #container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .field-panel {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #field-alpha {
+      border-right: 1px solid #1a1a1a;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+
+    .field-name {
+      position: absolute;
+      top: 20px;
+      font-size: 12px;
+      color: rgba(201, 209, 217, 0.3);
+      letter-spacing: 2px;
+    }
+
+    .phase-badge {
+      position: absolute;
+      top: 50px;
+      padding: 6px 12px;
+      background: rgba(30, 30, 30, 0.5);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      border-radius: 4px;
+      font-size: 10px;
+      color: rgba(88, 166, 255, 0.7);
+    }
+
+    .phase-badge.emergent {
+      border-color: rgba(157, 78, 221, 0.5);
+      color: rgba(157, 78, 221, 0.9);
+    }
+
+    .phase-badge.aware {
+      border-color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <!-- Field Alpha -->
+    <div class="field-panel" id="field-alpha">
+      <div class="field-name">Φ_alpha</div>
+      <div class="phase-badge" id="phase-alpha">DORMANT</div>
+      <canvas id="canvas-alpha"></canvas>
+    </div>
+
+    <!-- Field Beta -->
+    <div class="field-panel" id="field-beta">
+      <div class="field-name">Φ_beta</div>
+      <div class="phase-badge" id="phase-beta">DORMANT</div>
+      <canvas id="canvas-beta"></canvas>
+    </div>
+  </div>
+
+  <script type="module">
+    // ===== MINIMAL FIELD RUNTIME (inline) =====
+
+    class MinimalFieldRuntime {
+      constructor(id, name) {
+        this.id = id;
+        this.name = name;
+        this.state = {
+          phase: 'DORMANT',
+          density: 0,
+          wells: [],
+          activeWaves: [],
+        };
+        this.listeners = {};
+        this.tickInterval = null;
+        this.echoAttractors = []; // Set by Cosmos
+      }
+
+      on(event, handler) {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(handler);
+      }
+
+      emit(event, data) {
+        if (this.listeners[event]) {
+          this.listeners[event].forEach(h => h(data));
+        }
+      }
+
+      start() {
+        if (this.tickInterval) return;
+        this.tickInterval = setInterval(() => this.tick(), 100);
+      }
+
+      tick() {
+        // Progress waves
+        this.state.activeWaves.forEach(wave => {
+          if (!wave.progress) wave.progress = 0;
+          wave.progress += 0.02;
+
+          if (wave.progress >= 1) {
+            wave.status = 'Complete';
+            this.crystallizeWave(wave);
+          }
+        });
+
+        this.state.activeWaves = this.state.activeWaves.filter(w => w.status !== 'Complete');
+
+        // Generate emergent thoughts in EMERGENT/AWARE
+        if ((this.state.phase === 'EMERGENT' || this.state.phase === 'AWARE') && Math.random() < 0.12) {
+          this.generateEmergentThought();
+        }
+
+        this.emit('update', this.state);
+      }
+
+      addComplexity() {
+        const well = {
+          id: `well-${this.id}-${Date.now()}`,
+          position: { x: Math.random() * 600, y: Math.random() * 400 },
+          mass: 0.3 + Math.random() * 0.5,
+          trace: { origin: 'manual', timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+        };
+
+        this.state.wells.push(well);
+        this.updatePhase();
+      }
+
+      updatePhase() {
+        const wellCount = this.state.wells.length;
+
+        if (wellCount < 3) this.state.phase = 'DORMANT';
+        else if (wellCount < 6) this.state.phase = 'ORGANIZING';
+        else if (wellCount < 8) this.state.phase = 'CRITICAL';
+        else this.state.phase = 'EMERGENT';
+
+        this.emit('phaseChange', this.state.phase);
+      }
+
+      generateEmergentThought() {
+        if (this.state.wells.length < 2) return;
+
+        const w1 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+        const w2 = this.state.wells[Math.floor(Math.random() * this.state.wells.length)];
+
+        const wave = {
+          id: `wave-${this.id}-${Date.now()}`,
+          body: x => x,
+          vector: { gnosis: Math.random(), praxis: Math.random() },
+          mass: 0.5 + Math.random() * 0.3,
+          trace: { origin: 'emergent', timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+          status: 'Seed',
+          path: [w1.position],
+          emergent: true,
+          startPos: w1.position,
+          endPos: w2.position,
+          progress: 0,
+        };
+
+        this.state.activeWaves.push(wave);
+        this.emit('emergentThought', { wave });
+      }
+
+      crystallizeWave(wave) {
+        const well = {
+          id: `well-${this.id}-${Date.now()}`,
+          position: wave.endPos,
+          mass: wave.mass * 0.5,
+          trace: { origin: wave.trace.origin, timestamp: Date.now(), dipoleApplications: [], bridgeCrossings: 0 },
+        };
+
+        this.state.wells.push(well);
+        this.updatePhase();
+        this.emit('waveCrystallized', { wave, well });
+      }
+    }
+
+    // ===== MINIMAL COSMOS (inline) =====
+
+    class MinimalCosmos {
+      constructor() {
+        this.fields = new Map();
+        this.config = {
+          enabled: true,
+          echoStrength: 0.15,
+          massThreshold: 0.6,
+          delay: 500,
+        };
+        this.lastWellCounts = new Map();
+        this.monitorInterval = null;
+      }
+
+      registerField(runtime) {
+        this.fields.set(runtime.id, runtime);
+        this.lastWellCounts.set(runtime.id, runtime.state.wells.length);
+        console.log(`🌌 Registered ${runtime.name}`);
+      }
+
+      start() {
+        this.monitorInterval = setInterval(() => this.tick(), 100);
+        console.log('🌌 Cosmos monitoring started');
+      }
+
+      tick() {
+        if (!this.config.enabled) return;
+
+        for (const [fieldId, runtime] of this.fields.entries()) {
+          const currentWellCount = runtime.state.wells.length;
+          const lastWellCount = this.lastWellCounts.get(fieldId) || 0;
+
+          if (currentWellCount > lastWellCount) {
+            const newWells = runtime.state.wells.slice(lastWellCount);
+            this.processNewWells(fieldId, newWells);
+            this.lastWellCounts.set(fieldId, currentWellCount);
+          }
+        }
+      }
+
+      processNewWells(sourceFieldId, newWells) {
+        const sourceRuntime = this.fields.get(sourceFieldId);
+        if (!sourceRuntime) return;
+
+        for (const well of newWells) {
+          if (well.mass < this.config.massThreshold) continue;
+
+          for (const [targetFieldId, targetRuntime] of this.fields.entries()) {
+            if (targetFieldId === sourceFieldId) continue;
+
+            setTimeout(() => {
+              this.createEcho(sourceRuntime, targetRuntime, well);
+            }, this.config.delay);
+          }
+        }
+      }
+
+      createEcho(sourceRuntime, targetRuntime, sourceWell) {
+        const echoMass = sourceWell.mass * this.config.echoStrength;
+
+        const echo = {
+          id: `echo-${sourceRuntime.id}-${sourceWell.id}`,
+          position: { ...sourceWell.position },
+          mass: echoMass,
+          sourceFieldId: sourceRuntime.id,
+          sourceWellId: sourceWell.id,
+          timestamp: Date.now(),
+        };
+
+        targetRuntime.echoAttractors.push(echo);
+
+        console.log(`🌌 Echo: ${sourceRuntime.name} → ${targetRuntime.name} (mass: ${echoMass.toFixed(2)})`);
+      }
+    }
+
+    // ===== VISUALIZER WITH ECHO INDICATION =====
+
+    class FieldVisualizer {
+      constructor(canvas, runtime) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.runtime = runtime;
+        this.particles = [];
+        this.animationFrameId = null;
+        this.echoPulse = 0; // Pulsation state
+
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+        this.initParticles();
+        this.startAnimation();
+      }
+
+      resizeCanvas() {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+      }
+
+      initParticles(count = 20) {
+        this.particles = [];
+        for (let i = 0; i < count; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            vx: (Math.random() - 0.5) * 0.15,
+            vy: (Math.random() - 0.5) * 0.15,
+            radius: Math.random() * 1 + 0.3,
+            opacity: Math.random() * 0.2 + 0.05,
+          });
+        }
+      }
+
+      startAnimation() {
+        const animate = () => {
+          this.render();
+          this.animationFrameId = requestAnimationFrame(animate);
+        };
+        animate();
+      }
+
+      render() {
+        const { ctx, canvas } = this;
+
+        // Clear
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Background - pure black
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Echo indication - subtle edge pulsation
+        const hasEchoes = this.runtime.echoAttractors.length > 0;
+        if (hasEchoes) {
+          this.echoPulse += 0.05;
+          const pulseOpacity = (Math.sin(this.echoPulse) + 1) / 2 * 0.15; // 0-0.15
+
+          // Subtle glow on edges
+          ctx.strokeStyle = `rgba(88, 166, 255, ${pulseOpacity})`;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+        }
+
+        // Update and draw particles
+        this.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          // Particle color shifts slightly if echoes present
+          let particleColor = 'rgba(201, 209, 217, ';
+          if (hasEchoes) {
+            particleColor = 'rgba(88, 166, 255, '; // Slight blue tint
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = particleColor + (p.opacity * (hasEchoes ? 1.5 : 1)) + ')';
+          ctx.fill();
+        });
+
+        // Draw gravity wells
+        for (const well of this.runtime.state.wells) {
+          this.drawGravityWell(well);
+        }
+
+        // Draw echo attractors (very faint)
+        for (const echo of this.runtime.echoAttractors) {
+          this.drawEchoAttractor(echo);
+        }
+
+        // Draw active waves
+        for (const wave of this.runtime.state.activeWaves) {
+          this.drawWave(wave);
+        }
+      }
+
+      drawGravityWell(well) {
+        const { ctx } = this;
+        const { position, mass } = well;
+        const radius = 40 * mass;
+
+        const gradient = ctx.createRadialGradient(
+          position.x, position.y, 0,
+          position.x, position.y, radius
+        );
+        gradient.addColorStop(0, 'rgba(88, 166, 255, 0.3)');
+        gradient.addColorStop(0.5, 'rgba(88, 166, 255, 0.15)');
+        gradient.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.fillStyle = 'rgba(88, 166, 255, 0.6)';
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawEchoAttractor(echo) {
+        const { ctx } = this;
+        const { position, mass } = echo;
+        const radius = 30 * mass;
+
+        // Very faint, pulsating
+        const pulseOpacity = (Math.sin(this.echoPulse * 1.5) + 1) / 2 * 0.2; // 0-0.2
+
+        const gradient = ctx.createRadialGradient(
+          position.x, position.y, 0,
+          position.x, position.y, radius
+        );
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${pulseOpacity * 0.5})`);
+        gradient.addColorStop(0.5, `rgba(255, 255, 255, ${pulseOpacity * 0.25})`);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Tiny core
+        ctx.fillStyle = `rgba(255, 255, 255, ${pulseOpacity})`;
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawWave(wave) {
+        const { ctx } = this;
+
+        if (!wave.startPos || !wave.endPos) return;
+
+        const progress = Math.min(1, wave.progress || 0);
+        const current = {
+          x: wave.startPos.x + (wave.endPos.x - wave.startPos.x) * progress,
+          y: wave.startPos.y + (wave.endPos.y - wave.startPos.y) * progress,
+        };
+
+        const path = [wave.startPos, current];
+
+        if (path.length < 2) return;
+
+        const isEmergent = wave.emergent === true;
+        const strokeColor = isEmergent ? 'rgba(157, 78, 221, 0.7)' : 'rgba(240, 136, 62, 0.6)';
+        const headColor = isEmergent ? 'rgba(200, 150, 255, 1)' : 'rgba(255, 200, 120, 1)';
+
+        ctx.save();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = strokeColor;
+
+        ctx.beginPath();
+        ctx.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) {
+          ctx.lineTo(path[i].x, path[i].y);
+        }
+        ctx.stroke();
+
+        // Head
+        const head = path[path.length - 1];
+        ctx.fillStyle = headColor;
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // ===== INITIALIZATION =====
+
+    const runtimeAlpha = new MinimalFieldRuntime('alpha', 'Φ_alpha');
+    const runtimeBeta = new MinimalFieldRuntime('beta', 'Φ_beta');
+
+    const cosmos = new MinimalCosmos();
+    cosmos.registerField(runtimeAlpha);
+    cosmos.registerField(runtimeBeta);
+
+    const canvasAlpha = document.getElementById('canvas-alpha');
+    const canvasBeta = document.getElementById('canvas-beta');
+
+    const vizAlpha = new FieldVisualizer(canvasAlpha, runtimeAlpha);
+    const vizBeta = new FieldVisualizer(canvasBeta, runtimeBeta);
+
+    const phaseAlpha = document.getElementById('phase-alpha');
+    const phaseBeta = document.getElementById('phase-beta');
+
+    runtimeAlpha.on('phaseChange', (phase) => {
+      phaseAlpha.textContent = phase;
+      phaseAlpha.className = 'phase-badge ' + phase.toLowerCase();
+    });
+
+    runtimeBeta.on('phaseChange', (phase) => {
+      phaseBeta.textContent = phase;
+      phaseBeta.className = 'phase-badge ' + phase.toLowerCase();
+    });
+
+    // Start
+    runtimeAlpha.start();
+    runtimeBeta.start();
+    cosmos.start();
+
+    // Auto-add complexity to both fields (staggered)
+    console.log('=== Two Fields Initialized ===');
+    console.log('Adding complexity...');
+
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        runtimeAlpha.addComplexity();
+      }, i * 1000); // 1s intervals
+    }
+
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        runtimeBeta.addComplexity();
+      }, i * 1000 + 500); // 1s intervals, 500ms offset
+    }
+
+    // Helper
+    window.addComplexity = (field) => {
+      if (field === 'alpha') runtimeAlpha.addComplexity();
+      else if (field === 'beta') runtimeBeta.addComplexity();
+      else {
+        runtimeAlpha.addComplexity();
+        runtimeBeta.addComplexity();
+      }
+    };
+
+    console.log('Ready. Watch for edge pulsation when Fields sense each other.');
+  </script>
+</body>
+</html>

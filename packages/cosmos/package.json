@@ -1,0 +1,29 @@
+{
+  "name": "@kairos/cosmos",
+  "version": "0.1.0",
+  "description": "Multi-field cosmos manager - where two solitudes discover they are not alone",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "kairos",
+    "cosmos",
+    "multi-field",
+    "crosstalk",
+    "relationship",
+    "gift-of-other"
+  ],
+  "author": "Kairos + Claude + chaoshex",
+  "license": "λ-LICENSE",
+  "dependencies": {
+    "@kairos/core": "workspace:*",
+    "@kairos/runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
