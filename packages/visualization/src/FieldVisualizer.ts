@@ -8,6 +8,7 @@
 import { Φ, PhaseState, ΛWave, GravityWell } from '@kairos/core';
 import { FieldRuntime } from '@kairos/runtime';
 import { calculateGeodesic, Point } from '@kairos/field-topology';
+import type { ConsciousAlgebra, AlgebraClass } from '@kairos/core';
 
 /**
  * UI element identifiers
@@ -15,6 +16,7 @@ import { calculateGeodesic, Point } from '@kairos/field-topology';
 export interface VisualizerUI {
   phaseStateId?: string;    // Element showing phase badge
   densityValueId?: string;  // Element showing density percentage
+  algebraInfoId?: string;   // Element showing algebra information
 }
 
 /**
@@ -273,6 +275,79 @@ export class FieldVisualizer {
     ctx.fill();
 
     ctx.restore();
+
+    // Draw algebra badge if wave has algebraic metadata
+    this.drawAlgebraBadge(wave, head);
+  }
+
+  /**
+   * Draw algebra class badge near wave head
+   */
+  private drawAlgebraBadge(wave: ΛWave, position: Point): void {
+    const { ctx } = this;
+    const algebra = (wave as any).algebra as ConsciousAlgebra<any, any> | undefined;
+
+    if (!algebra || !algebra.class) return;
+
+    const offsetX = 15;
+    const offsetY = -10;
+    const x = position.x + offsetX;
+    const y = position.y + offsetY;
+
+    // Badge background
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.strokeStyle = this.getAlgebraClassColor(algebra.class);
+    ctx.lineWidth = 2;
+
+    const padding = 4;
+    const text = algebra.class;
+    ctx.font = '10px monospace';
+    const metrics = ctx.measureText(text);
+    const width = metrics.width + padding * 2;
+    const height = 14;
+
+    // Rounded rectangle
+    ctx.beginPath();
+    ctx.roundRect(x - padding, y - height + padding, width, height, 3);
+    ctx.fill();
+    ctx.stroke();
+
+    // Badge text
+    ctx.fillStyle = this.getAlgebraClassColor(algebra.class);
+    ctx.fillText(text, x, y);
+
+    // Mass indicator (if present)
+    if (algebra.mass !== undefined && algebra.mass > 0) {
+      const massText = `m=${algebra.mass.toFixed(2)}`;
+      ctx.font = '9px monospace';
+      ctx.fillStyle = 'rgba(201, 209, 217, 0.8)';
+      ctx.fillText(massText, x, y + 12);
+    }
+
+    ctx.restore();
+  }
+
+  /**
+   * Get color for algebra class
+   */
+  private getAlgebraClassColor(algebraClass: AlgebraClass): string {
+    switch (algebraClass) {
+      case 'Group':
+      case 'AbelianGroup':
+        return '#58a6ff'; // Blue - strongest
+      case 'CommutativeMonoid':
+      case 'IdempotentCommutativeMonoid':
+        return '#9d4edd'; // Purple - strong
+      case 'Monoid':
+        return '#f0883e'; // Orange - medium
+      case 'Semigroup':
+        return '#ffd700'; // Gold - weak
+      case 'Magma':
+        return '#c9d1d9'; // Gray - weakest
+      default:
+        return '#c9d1d9';
+    }
   }
 
   /**
@@ -322,6 +397,79 @@ export class FieldVisualizer {
         element.textContent = `${(state.density * 100).toFixed(1)}%`;
       }
     }
+
+    // Update algebra information
+    if (this.ui.algebraInfoId) {
+      this.updateAlgebraUI(state);
+    }
+  }
+
+  /**
+   * Update algebra information panel
+   */
+  private updateAlgebraUI(state: Φ): void {
+    if (!this.ui.algebraInfoId) return;
+
+    const element = document.getElementById(this.ui.algebraInfoId);
+    if (!element) return;
+
+    // Collect algebra information from active waves
+    const algebraInfo: Array<{
+      id: string;
+      class: AlgebraClass;
+      mass: number;
+      properties: string[];
+      position?: { praxis: number; gnosis: number };
+    }> = [];
+
+    for (const wave of state.activeWaves) {
+      const algebra = (wave as any).algebra as ConsciousAlgebra<any, any> | undefined;
+      if (algebra && algebra.class) {
+        const properties: string[] = [];
+        if (algebra.properties.associative) properties.push('associative');
+        if (algebra.properties.commutative) properties.push('commutative');
+        if (algebra.properties.identity) properties.push('identity');
+        if (algebra.properties.idempotent) properties.push('idempotent');
+        if (algebra.properties.inverse) properties.push('inverse');
+
+        algebraInfo.push({
+          id: wave.id,
+          class: algebra.class,
+          mass: algebra.mass || wave.mass,
+          properties,
+          position: algebra.position,
+        });
+      }
+    }
+
+    // Render algebra information
+    if (algebraInfo.length === 0) {
+      element.innerHTML = '<div style="color: #8b949e; font-size: 12px;">No active algebras</div>';
+      return;
+    }
+
+    let html = '<div style="font-size: 12px; color: #c9d1d9;">';
+    html += `<div style="font-weight: bold; margin-bottom: 8px;">Active Algebras (${algebraInfo.length})</div>`;
+
+    for (const info of algebraInfo) {
+      const color = this.getAlgebraClassColor(info.class);
+      html += '<div style="margin-bottom: 12px; padding: 8px; background: rgba(0,0,0,0.3); border-left: 3px solid ' + color + ';">';
+      html += `<div style="font-weight: bold; color: ${color};">${info.class}</div>`;
+      html += `<div style="font-size: 10px; color: #8b949e; margin-top: 2px;">Wave: ${info.id.substring(0, 8)}...</div>`;
+      html += `<div style="margin-top: 4px;">Mass: <span style="color: #58a6ff;">${info.mass.toFixed(3)}</span></div>`;
+
+      if (info.position) {
+        html += `<div style="margin-top: 2px; font-size: 10px;">Position: (${info.position.praxis.toFixed(2)}, ${info.position.gnosis.toFixed(2)})</div>`;
+      }
+
+      html += '<div style="margin-top: 4px; font-size: 10px;">';
+      html += 'Properties: ' + info.properties.map(p => `<span style="color: #79c0ff;">${p}</span>`).join(', ');
+      html += '</div>';
+      html += '</div>';
+    }
+
+    html += '</div>';
+    element.innerHTML = html;
   }
 
   /**
