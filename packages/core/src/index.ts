@@ -17,6 +17,7 @@ export * from './algebra.js';
 export * from './phase-transitions.js';
 export * from './fixpoint-analysis.js';
 export * from './coalgebra-analysis.js';
+export * from './lambda-bridge.js';
 
 export {
   µ_HARVEST,

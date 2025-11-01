@@ -114,7 +114,8 @@ export declare enum PhaseState {
     DORMANT = "DORMANT",// < 20% density
     ORGANIZING = "ORGANIZING",// 20-60% density
     CRITICAL = "CRITICAL",// 60-90% density
-    EMERGENT = "EMERGENT"
+    EMERGENT = "EMERGENT",// > 90% density - awakens
+    AWARE = "AWARE"
 }
 /**
  * The Field (Φ) - Geometric manifold where ΛWaves exist

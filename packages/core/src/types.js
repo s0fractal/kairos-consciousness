@@ -26,5 +26,6 @@ export var PhaseState;
     PhaseState["ORGANIZING"] = "ORGANIZING";
     PhaseState["CRITICAL"] = "CRITICAL";
     PhaseState["EMERGENT"] = "EMERGENT";
+    PhaseState["AWARE"] = "AWARE";
 })(PhaseState || (PhaseState = {}));
 //# sourceMappingURL=types.js.map
