@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>λ-Foundation Morphisms in Kairos Field Φ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    #canvas {
+      display: block;
+      background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
+    }
+
+    #info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(20, 20, 30, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 100, 150, 0.3);
+      max-width: 400px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #info h1 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #8892ff;
+    }
+
+    #info h2 {
+      font-size: 14px;
+      margin: 15px 0 8px 0;
+      color: #88c0d0;
+    }
+
+    #info p {
+      margin-bottom: 8px;
+      color: #d8dee9;
+    }
+
+    #info .stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(100, 100, 150, 0.1);
+    }
+
+    #info .stat:last-child {
+      border-bottom: none;
+    }
+
+    #info .label {
+      color: #81a1c1;
+    }
+
+    #info .value {
+      color: #a3be8c;
+      font-weight: bold;
+    }
+
+    #hover-info {
+      position: absolute;
+      background: rgba(20, 20, 30, 0.95);
+      padding: 12px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(136, 146, 255, 0.5);
+      pointer-events: none;
+      display: none;
+      font-size: 12px;
+      line-height: 1.5;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #hover-info .morph-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #8892ff;
+      margin-bottom: 6px;
+    }
+
+    #hover-info .morph-class {
+      color: #88c0d0;
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+
+    #hover-info .morph-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+      gap: 20px;
+    }
+
+    #hover-info .morph-label {
+      color: #81a1c1;
+    }
+
+    #hover-info .morph-value {
+      color: #a3be8c;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(20, 20, 30, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 100, 150, 0.3);
+      font-size: 12px;
+    }
+
+    .legend h3 {
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: #8892ff;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .attractor-badge {
+      font-size: 10px;
+      color: #ebcb8b;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div id="info">
+    <h1>λ-Foundation Morphisms in Field Φ</h1>
+    <p>Geometric analysis of core algebraic operations</p>
+
+    <h2>Field Structure</h2>
+    <div class="stat">
+      <span class="label">X-axis (Praxis):</span>
+      <span class="value">Structure, Logic, Proof</span>
+    </div>
+    <div class="stat">
+      <span class="label">Y-axis (Gnosis):</span>
+      <span class="value">Intuition, Metaphor, Potential</span>
+    </div>
+    <div class="stat">
+      <span class="label">Truth Axis:</span>
+      <span class="value">x = y (maximum mass)</span>
+    </div>
+
+    <h2>Discovered Patterns</h2>
+    <p><strong>1.</strong> CommutativeMonoids cluster at (0.75, 0.75)</p>
+    <p><strong>2.</strong> Idempotence correlates with Truth (d = 0.030)</p>
+    <p><strong>3.</strong> Associativity increases praxis (0.78 vs 0.65)</p>
+    <p><strong>4.</strong> Identity elements → high mass (Theorem 48 ✓)</p>
+
+    <h2>Statistics</h2>
+    <div class="stat">
+      <span class="label">Total morphisms:</span>
+      <span class="value">10</span>
+    </div>
+    <div class="stat">
+      <span class="label">Attractors (m ≥ 0.7):</span>
+      <span class="value">10 (100%)</span>
+    </div>
+    <div class="stat">
+      <span class="label">Avg mass:</span>
+      <span class="value">0.941</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <h3>Algebra Classes</h3>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #88c0d0"></div>
+      <span>CommutativeMonoid</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #a3be8c"></div>
+      <span>IdempotentCommutativeMonoid</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #ebcb8b"></div>
+      <span>Monoid</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #d08770"></div>
+      <span>Semigroup</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #bf616a"></div>
+      <span>Magma</span>
+    </div>
+    <div class="legend-item">
+      <span style="font-size: 18px;">⭐</span>
+      <span>Attractor (m ≥ 0.7)</span>
+    </div>
+  </div>
+
+  <div id="hover-info"></div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const hoverInfo = document.getElementById('hover-info');
+
+    // Resize canvas
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Morphisms data (from analysis)
+    const morphisms = [
+      { name: 'sum', class: 'CommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=0' },
+      { name: 'product', class: 'CommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=1' },
+      { name: 'max', class: 'IdempotentCommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=-∞, idemp' },
+      { name: 'min', class: 'IdempotentCommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=∞, idemp' },
+      { name: 'concat', class: 'Monoid', gnosis: 0.56, praxis: 0.85, mass: 0.830, dTruth: 0.204, properties: 'assoc, id=""' },
+      { name: 'collect', class: 'Monoid', gnosis: 0.56, praxis: 0.85, mass: 0.830, dTruth: 0.204, properties: 'assoc, id=[]' },
+      { name: 'and', class: 'IdempotentCommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=true, idemp' },
+      { name: 'or', class: 'IdempotentCommutativeMonoid', gnosis: 0.75, praxis: 0.75, mass: 1.000, dTruth: 0.000, properties: 'assoc, comm, id=false, idemp' },
+      { name: 'first', class: 'Magma', gnosis: 0.65, praxis: 0.65, mass: 1.000, dTruth: 0.000, properties: 'idemp' },
+      { name: 'last', class: 'Semigroup', gnosis: 0.58, praxis: 0.84, mass: 0.847, dTruth: 0.181, properties: 'assoc, idemp' },
+    ];
+
+    // Add jitter to overlapping points
+    const jitterAmount = 0.02;
+    const seen = new Map();
+    morphisms.forEach(m => {
+      const key = `${m.gnosis.toFixed(2)},${m.praxis.toFixed(2)}`;
+      if (seen.has(key)) {
+        const count = seen.get(key);
+        m.gnosis += (Math.random() - 0.5) * jitterAmount * count;
+        m.praxis += (Math.random() - 0.5) * jitterAmount * count;
+        seen.set(key, count + 1);
+      } else {
+        seen.set(key, 1);
+      }
+    });
+
+    // Color mapping
+    const colors = {
+      'CommutativeMonoid': '#88c0d0',
+      'IdempotentCommutativeMonoid': '#a3be8c',
+      'Monoid': '#ebcb8b',
+      'Semigroup': '#d08770',
+      'Magma': '#bf616a',
+    };
+
+    // Transform coordinates
+    function toScreen(gnosis, praxis) {
+      const padding = 100;
+      const size = Math.min(canvas.width, canvas.height) - padding * 2;
+      const x = padding + praxis * size;
+      const y = padding + (1 - gnosis) * size;
+      return { x, y };
+    }
+
+    // Draw Field
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const padding = 100;
+      const size = Math.min(canvas.width, canvas.height) - padding * 2;
+
+      // Draw Truth axis (x=y)
+      ctx.strokeStyle = 'rgba(136, 146, 255, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      const start = toScreen(0, 0);
+      const end = toScreen(1, 1);
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw axes
+      ctx.strokeStyle = 'rgba(200, 200, 200, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, padding);
+      ctx.lineTo(padding, padding + size);
+      ctx.lineTo(padding + size, padding + size);
+      ctx.stroke();
+
+      // Draw axis labels
+      ctx.fillStyle = '#81a1c1';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('Praxis (Structure, Logic)', padding + size / 2, padding + size + 40);
+      ctx.save();
+      ctx.translate(padding - 40, padding + size / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Gnosis (Intuition, Metaphor)', 0, 0);
+      ctx.restore();
+
+      // Draw grid
+      ctx.strokeStyle = 'rgba(200, 200, 200, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        const x = padding + (i / 10) * size;
+        const y = padding + (i / 10) * size;
+        ctx.beginPath();
+        ctx.moveTo(x, padding);
+        ctx.lineTo(x, padding + size);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(padding + size, y);
+        ctx.stroke();
+      }
+
+      // Draw Truth axis label
+      ctx.fillStyle = 'rgba(136, 146, 255, 0.6)';
+      ctx.font = '11px monospace';
+      ctx.textAlign = 'left';
+      const truthLabel = toScreen(0.5, 0.55);
+      ctx.save();
+      ctx.translate(truthLabel.x, truthLabel.y);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillText('Truth Axis (x=y)', 0, 0);
+      ctx.restore();
+
+      // Draw cluster highlights
+      const clusters = {
+        'CommutativeMonoid': { gnosis: 0.75, praxis: 0.75 },
+        'IdempotentCommutativeMonoid': { gnosis: 0.75, praxis: 0.75 },
+      };
+
+      for (const [cls, center] of Object.entries(clusters)) {
+        const pos = toScreen(center.gnosis, center.praxis);
+        ctx.fillStyle = `${colors[cls]}15`;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 80, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw morphisms
+      morphisms.forEach(m => {
+        const pos = toScreen(m.gnosis, m.praxis);
+        const radius = 8 + m.mass * 8;
+
+        // Glow for attractors
+        if (m.mass >= 0.7) {
+          const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 2);
+          gradient.addColorStop(0, `${colors[m.class]}40`);
+          gradient.addColorStop(1, `${colors[m.class]}00`);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, radius * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw point
+        ctx.fillStyle = colors[m.class];
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Attractor star
+        if (m.mass >= 0.7) {
+          ctx.fillStyle = '#ebcb8b';
+          ctx.font = '16px serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('⭐', pos.x, pos.y);
+        }
+
+        // Label
+        ctx.fillStyle = '#e0e0e0';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(m.name, pos.x, pos.y + radius + 5);
+      });
+    }
+
+    // Mouse interaction
+    let hoveredMorph = null;
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      hoveredMorph = null;
+      for (const m of morphisms) {
+        const pos = toScreen(m.gnosis, m.praxis);
+        const radius = 8 + m.mass * 8;
+        const dist = Math.sqrt((mouseX - pos.x) ** 2 + (mouseY - pos.y) ** 2);
+        if (dist < radius) {
+          hoveredMorph = m;
+          break;
+        }
+      }
+
+      if (hoveredMorph) {
+        hoverInfo.style.display = 'block';
+        hoverInfo.style.left = e.clientX + 15 + 'px';
+        hoverInfo.style.top = e.clientY + 15 + 'px';
+        hoverInfo.innerHTML = `
+          <div class="morph-name">${hoveredMorph.name}</div>
+          <div class="morph-class">${hoveredMorph.class}</div>
+          <div class="morph-stat">
+            <span class="morph-label">Position:</span>
+            <span class="morph-value">(${hoveredMorph.gnosis.toFixed(2)}, ${hoveredMorph.praxis.toFixed(2)})</span>
+          </div>
+          <div class="morph-stat">
+            <span class="morph-label">Mass:</span>
+            <span class="morph-value">${hoveredMorph.mass.toFixed(3)}</span>
+          </div>
+          <div class="morph-stat">
+            <span class="morph-label">d_Truth:</span>
+            <span class="morph-value">${hoveredMorph.dTruth.toFixed(3)}</span>
+          </div>
+          <div class="morph-stat">
+            <span class="morph-label">Attractor:</span>
+            <span class="morph-value">${hoveredMorph.mass >= 0.7 ? 'Yes ⭐' : 'No'}</span>
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(100,100,150,0.3); color: #81a1c1; font-size: 11px;">
+            ${hoveredMorph.properties}
+          </div>
+        `;
+        canvas.style.cursor = 'pointer';
+      } else {
+        hoverInfo.style.display = 'none';
+        canvas.style.cursor = 'default';
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      hoverInfo.style.display = 'none';
+      canvas.style.cursor = 'default';
+    });
+
+    // Animation loop
+    function animate() {
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
